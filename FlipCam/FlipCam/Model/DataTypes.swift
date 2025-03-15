@@ -41,6 +41,13 @@ protocol OutputService {
 	var output: Output { get }
 	var captureActivity: CaptureActivity { get }
 	func updateConfiguration(for device: AVCaptureDevice)
+	func setCameraRotationAngle(_ angle: CGFloat)
+}
+
+extension OutputService {
+	func setCameraRotationAngle(_ angle: CGFloat) {
+		output.connection(with: .video)?.videoRotationAngle = angle
+	}
 }
 
 enum CameraError: Error {
