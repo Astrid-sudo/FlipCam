@@ -216,7 +216,11 @@ final class ShotViewModel: Camera {
 				let context = CIContext(options: nil)
 				
 				// First invert the colors
-				let invertFilter = CIFilter(name: "CIColorInvert")!
+				guard let invertFilter = CIFilter(name: "CIColorInvert") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIColorInvert.")
+					return
+				}
 				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
 				
 				guard let invertedImage = invertFilter.outputImage else {
@@ -225,7 +229,11 @@ final class ShotViewModel: Camera {
 				}
 				
 				// Then apply high contrast
-				let contrastFilter = CIFilter(name: "CIColorControls")!
+				guard let contrastFilter = CIFilter(name: "CIColorControls") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIColorControls.")
+					return
+				}
 				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
 				contrastFilter.setValue(NSNumber(value: 10), forKey: kCIInputContrastKey)
 				contrastFilter.setValue(NSNumber(value: -2), forKey: kCIInputBrightnessKey)
@@ -246,7 +254,11 @@ final class ShotViewModel: Camera {
 				let context = CIContext(options: nil)
 				
 				// First invert the colors
-				let invertFilter = CIFilter(name: "CIColorInvert")!
+				guard let invertFilter = CIFilter(name: "CIColorInvert") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIColorInvert.")
+					return
+				}
 				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
 				
 				guard let invertedImage = invertFilter.outputImage else {
@@ -255,7 +267,11 @@ final class ShotViewModel: Camera {
 				}
 				
 				// Increase contrast of inverted image
-				let contrastFilter = CIFilter(name: "CIColorControls")!
+				guard let contrastFilter = CIFilter(name: "CIColorControls") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIColorControls.")
+					return
+				}
 				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
 				contrastFilter.setValue(NSNumber(value: 3.0), forKey: kCIInputContrastKey)
 				contrastFilter.setValue(NSNumber(value: 0.0), forKey: kCIInputBrightnessKey)
@@ -266,7 +282,11 @@ final class ShotViewModel: Camera {
 				}
 				
 				// Apply edge detection
-				let edgeFilter = CIFilter(name: "CIEdges")!
+				guard let edgeFilter = CIFilter(name: "CIEdges") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIEdges.")
+					return
+				}
 				edgeFilter.setValue(contrastedImage, forKey: kCIInputImageKey)
 				edgeFilter.setValue(NSNumber(value: 6.0), forKey: kCIInputIntensityKey)
 				
@@ -276,7 +296,11 @@ final class ShotViewModel: Camera {
 				}
 				
 				// Make it brighter and increase contrast
-				let brightnessFilter = CIFilter(name: "CIColorControls")!
+				guard let brightnessFilter = CIFilter(name: "CIColorControls") else {
+					processedGuidePhoto = guidePhoto
+					logger.error("There is no CIFilter named CIColorControls.")
+					return
+				}
 				brightnessFilter.setValue(edgeOutput, forKey: kCIInputImageKey)
 				brightnessFilter.setValue(NSNumber(value: 8.0), forKey: kCIInputContrastKey)
 				brightnessFilter.setValue(NSNumber(value: 0.3), forKey: kCIInputBrightnessKey) // Make it brighter
