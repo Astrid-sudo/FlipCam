@@ -27,4 +27,61 @@ protocol Camera: AnyObject {
 	func rampZoom(to factor: CGFloat) async
 	func saveGuidePhotoIdentifier(_ identifier: String)
 }
+
+@Observable
+class PreviewCameraModel: Camera {
+	var cameraStatus: CameraStatus { status }
+	var prefersMinimizedUI = false
+	var shouldFlashScreen = false
+	struct PreviewSourceStub: PreviewSource {
+		// Stubbed out for test purposes.
+		func connect(to target: PreviewTarget) {}
+	}
+	let previewSource: PreviewSource = PreviewSourceStub()
+	private(set) var status = CameraStatus.unknown
+	private(set) var captureActivity = CaptureActivity.idle
+	private(set) var isSwitchingModes = false
+	private(set) var isVideoDeviceSwitchable = true
+	private(set) var isSwitchingCameraDevices = false
+	private(set) var thumbnail: CGImage?
+	var error: Error?
+	var zoomFactor: CGFloat = 1.0
+	var maxZoomFactor: CGFloat = 4.0
+
+	init(status: CameraStatus = .unknown) {
+		self.status = status
+	}
+
+	func start() async {
+		if status == .unknown {
+			status = .running
+		}
+	}
+
+	func switchCameraDevices() async {
+		logger.debug("Device switching isn't implemented in PreviewCamera.")
+	}
+
+	func capturePhoto() async {
+		logger.debug("Photo capture isn't implemented in PreviewCamera.")
+	}
+
+	func focusAndExpose(at point: CGPoint) async {
+		logger.debug("Focus and expose isn't implemented in PreviewCamera.")
+	}
+
+	func syncState() async {
+		logger.debug("Syncing state isn't implemented in PreviewCamera.")
+	}
+
+	func setZoom(factor: CGFloat) async {
+		zoomFactor = max(1.0, min(factor, maxZoomFactor))
+	}
+
+	func rampZoom(to factor: CGFloat) async {
+		zoomFactor = max(1.0, min(factor, maxZoomFactor))
+	}
+	func saveGuidePhotoIdentifier(_ identifier: String) {
+		logger.debug("saveGuidePhotoIdentifier isn't implemented in PreviewCamera.")
+	}
 }

@@ -115,7 +115,6 @@
 				8FF4830F2D7911A300260AEF /* Sources */,
 				8FF483102D7911A300260AEF /* Frameworks */,
 				8FF483112D7911A300260AEF /* Resources */,
-				8F4DD27F2D79E4290044ED59 /* Swiftlint Script */,
 			);
 			buildRules = (
 			);
@@ -210,7 +209,6 @@
 			mainGroup = 8FF4830A2D7911A300260AEF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8F4DD27E2D79E2970044ED59 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8FF483142D7911A300260AEF /* Products */;
@@ -247,27 +245,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		8F4DD27F2D79E4290044ED59 /* Swiftlint Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Swiftlint Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if command -v swiftlint >/dev/null 2>&1\nthen\n        swiftlint --autocorrect && swiftlint --fix\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8FF4830F2D7911A300260AEF /* Sources */ = {
@@ -612,17 +589,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		8F4DD27E2D79E2970044ED59 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/SwiftLint";
-			requirement = {
-				kind = exactVersion;
-				version = 0.58.2;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 8FF4830B2D7911A300260AEF /* Project object */;
 }
