@@ -26,14 +26,28 @@ final class ShotViewModel: Camera {
 	private(set) var maxZoomFactor: CGFloat = 1.0
 
 	/// Guide Photo
-	private(set) var guidePhoto: UIImage?
+	private var guidePhoto: UIImage?
 	private(set) var guidePhotoIdentifier: String?
 	private(set) var guidePhotoOpacity: Double = 0.5 // Default opacity value
+
+	/// Guide Photo Effects
+	enum GuidePhotoEffect: String, CaseIterable, Identifiable {
+		case normal = "Normal"
+		case contrast = "Contrast"
+		case inverse = "Inverse"
+		case outline = "Outline"
+		
+		var id: String { rawValue }
+	}
+
+	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
+	private(set) var processedGuidePhoto: UIImage?
 
 	init() {
 		/// Guide Photo
 		loadSavedGuidePhotoIdentifier()
 		loadSavedGuidePhotoOpacity()
+		loadSavedGuidePhotoEffect()
 	}
 
 	// MARK: - Starting the camera
@@ -98,15 +112,18 @@ final class ShotViewModel: Camera {
 	func loadGuidePhoto() async {
 		guard let identifier = guidePhotoIdentifier else {
 			guidePhoto = nil
+			processedGuidePhoto = nil
 			logger.info("There is no guide photo selected.")
 			return
 		}
 
 		do {
 			self.guidePhoto = try await mediaLibrary.loadPhoto(withIdentifier: identifier)
+			processGuidePhoto()
 		} catch {
 			logger.error("Failed to load guide photo: \(error)")
 			self.guidePhoto = nil
+			self.processedGuidePhoto = nil
 		}
 	}
 
@@ -145,6 +162,140 @@ final class ShotViewModel: Camera {
 	private func loadSavedGuidePhotoOpacity() {
 		if let savedOpacity = UserDefaults.standard.object(forKey: "guidePhotoOpacity") as? Double {
 			self.guidePhotoOpacity = savedOpacity
+		}
+	}
+
+	// MARK: - Guide Photo Effects
+
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
+		currentGuidePhotoEffect = effect
+		saveGuidePhotoEffect()
+		processGuidePhoto()
+	}
+
+	private func processGuidePhoto() {
+		guard let guidePhoto = guidePhoto else {
+			processedGuidePhoto = nil
+			logger.info("There is no guide photo selected.")
+			return
+		}
+		
+		switch currentGuidePhotoEffect {
+		case .normal:
+			processedGuidePhoto = guidePhoto
+			
+		case .contrast:
+			if let ciImage = CIImage(image: guidePhoto) {
+				let context = CIContext(options: nil)
+				
+				let parameters = [
+					kCIInputImageKey: ciImage,
+					kCIInputContrastKey: NSNumber(value: 10.0),
+					kCIInputBrightnessKey: NSNumber(value: 0.2)
+				] as [String : Any]
+				
+				if let filter = CIFilter(name: "CIColorControls", parameters: parameters),
+				   let outputImage = filter.outputImage,
+				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
+					processedGuidePhoto = UIImage(cgImage: cgImg)
+				} else {
+					processedGuidePhoto = guidePhoto
+				}
+			} else {
+				processedGuidePhoto = guidePhoto
+			}
+			
+		case .inverse:
+			if let ciImage = CIImage(image: guidePhoto) {
+				let context = CIContext(options: nil)
+				
+				// First invert the colors
+				let invertFilter = CIFilter(name: "CIColorInvert")!
+				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
+				
+				guard let invertedImage = invertFilter.outputImage else {
+					processedGuidePhoto = guidePhoto
+					return
+				}
+				
+				// Then apply high contrast
+				let contrastFilter = CIFilter(name: "CIColorControls")!
+				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
+				contrastFilter.setValue(NSNumber(value: 10), forKey: kCIInputContrastKey)
+				contrastFilter.setValue(NSNumber(value: -2), forKey: kCIInputBrightnessKey)
+				contrastFilter.setValue(NSNumber(value: 1.2), forKey: kCIInputSaturationKey)
+				
+				if let outputImage = contrastFilter.outputImage,
+				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
+					processedGuidePhoto = UIImage(cgImage: cgImg)
+				} else {
+					processedGuidePhoto = guidePhoto
+				}
+			} else {
+				processedGuidePhoto = guidePhoto
+			}
+			
+		case .outline:
+			if let ciImage = CIImage(image: guidePhoto) {
+				let context = CIContext(options: nil)
+				
+				// First invert the colors
+				let invertFilter = CIFilter(name: "CIColorInvert")!
+				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
+				
+				guard let invertedImage = invertFilter.outputImage else {
+					processedGuidePhoto = guidePhoto
+					return
+				}
+				
+				// Increase contrast of inverted image
+				let contrastFilter = CIFilter(name: "CIColorControls")!
+				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
+				contrastFilter.setValue(NSNumber(value: 3.0), forKey: kCIInputContrastKey)
+				contrastFilter.setValue(NSNumber(value: 0.0), forKey: kCIInputBrightnessKey)
+				
+				guard let contrastedImage = contrastFilter.outputImage else {
+					processedGuidePhoto = guidePhoto
+					return
+				}
+				
+				// Apply edge detection
+				let edgeFilter = CIFilter(name: "CIEdges")!
+				edgeFilter.setValue(contrastedImage, forKey: kCIInputImageKey)
+				edgeFilter.setValue(NSNumber(value: 6.0), forKey: kCIInputIntensityKey)
+				
+				guard let edgeOutput = edgeFilter.outputImage else {
+					processedGuidePhoto = guidePhoto
+					return
+				}
+				
+				// Make it brighter and increase contrast
+				let brightnessFilter = CIFilter(name: "CIColorControls")!
+				brightnessFilter.setValue(edgeOutput, forKey: kCIInputImageKey)
+				brightnessFilter.setValue(NSNumber(value: 8.0), forKey: kCIInputContrastKey)
+				brightnessFilter.setValue(NSNumber(value: 0.3), forKey: kCIInputBrightnessKey) // Make it brighter
+				brightnessFilter.setValue(NSNumber(value: 0.0), forKey: kCIInputSaturationKey)
+				
+				if let outputImage = brightnessFilter.outputImage,
+				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
+					processedGuidePhoto = UIImage(cgImage: cgImg)
+				} else {
+					processedGuidePhoto = guidePhoto
+				}
+			} else {
+				processedGuidePhoto = guidePhoto
+			}
+		}
+	}
+
+	private func saveGuidePhotoEffect() {
+		UserDefaults.standard.set(currentGuidePhotoEffect.rawValue, forKey: "guidePhotoEffect")
+	}
+
+	private func loadSavedGuidePhotoEffect() {
+		if let savedEffect = UserDefaults.standard.string(forKey: "guidePhotoEffect"),
+		   let effect = GuidePhotoEffect(rawValue: savedEffect) {
+			self.currentGuidePhotoEffect = effect
 		}
 	}
 
