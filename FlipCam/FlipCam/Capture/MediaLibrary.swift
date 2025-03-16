@@ -29,10 +29,10 @@ actor MediaLibrary {
 
 	private var isAuthorized: Bool {
 		get async {
-			let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+			let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 			var isAuthorized = status == .authorized
 			if status == .notDetermined {
-				let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+				let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
 				isAuthorized = status == .authorized
 			}
 			return isAuthorized
@@ -110,6 +110,34 @@ actor MediaLibrary {
 				locationManager.requestWhenInUseAuthorization()
 			}
 			return try await CLLocationUpdate.liveUpdates().first(where: { _ in true })?.location
+		}
+	}
+
+	// MARK: - Loading photos by identifier
+	func loadPhoto(withIdentifier identifier: String) async throws -> UIImage? {
+		guard await isAuthorized else {
+			throw Error.unauthorized
+		}
+		
+		let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
+		guard let asset = fetchResult.firstObject else {
+			return nil
+		}
+		
+		return await withCheckedContinuation { continuation in
+			let options = PHImageRequestOptions()
+			options.deliveryMode = .highQualityFormat
+			options.isNetworkAccessAllowed = true
+			options.isSynchronous = false
+			
+			PHImageManager.default().requestImage(
+				for: asset,
+				targetSize: PHImageManagerMaximumSize,
+				contentMode: .default,
+				options: options
+			) { image, info in
+				continuation.resume(returning: image)
+			}
 		}
 	}
 }

@@ -10,6 +10,7 @@ import SwiftUI
 @Observable
 final class ShotViewModel: Camera {
 
+	/// Camera protocol
 	var previewSource: PreviewSource { captureService.previewSource }
 	private let mediaLibrary = MediaLibrary()
 	private let captureService = CaptureService()
@@ -23,6 +24,15 @@ final class ShotViewModel: Camera {
 	private(set) var error: Error?
 	private(set) var zoomFactor: CGFloat = 1.0
 	private(set) var maxZoomFactor: CGFloat = 1.0
+
+	/// Guide Photo
+	private(set) var guidePhoto: UIImage?
+	private(set) var guidePhotoIdentifier: String?
+
+	init() {
+		/// Guide Photo
+		loadSavedGuidePhotoIdentifier()
+	}
 
 	// MARK: - Starting the camera
 
@@ -79,6 +89,46 @@ final class ShotViewModel: Camera {
 		withAnimation(.linear(duration: 0.01)) {
 			shouldFlashScreen = false
 		}
+	}
+
+	// MARK: - Guide Photo Management
+
+	func loadGuidePhoto() async {
+		guard let identifier = guidePhotoIdentifier else {
+			guidePhoto = nil
+			logger.info("There is no guide photo selected.")
+			return
+		}
+
+		do {
+			self.guidePhoto = try await mediaLibrary.loadPhoto(withIdentifier: identifier)
+		} catch {
+			logger.error("Failed to load guide photo: \(error)")
+			self.guidePhoto = nil
+		}
+	}
+
+	func saveGuidePhotoIdentifier(_ identifier: String) {
+		self.guidePhotoIdentifier = identifier
+		UserDefaults.standard.set(identifier, forKey: "guidePhotoIdentifier")
+		Task {
+			await loadGuidePhoto()
+		}
+	}
+
+	func loadSavedGuidePhotoIdentifier() {
+		if let savedIdentifier = UserDefaults.standard.string(forKey: "guidePhotoIdentifier") {
+			self.guidePhotoIdentifier = savedIdentifier
+			Task {
+				await loadGuidePhoto()
+			}
+		}
+	}
+
+	func clearGuidePhoto() {
+		guidePhoto = nil
+		guidePhotoIdentifier = nil
+		UserDefaults.standard.removeObject(forKey: "guidePhotoIdentifier")
 	}
 
 	// MARK: - Internal state observations
