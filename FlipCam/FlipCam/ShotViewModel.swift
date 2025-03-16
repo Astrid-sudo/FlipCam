@@ -43,11 +43,17 @@ final class ShotViewModel: Camera {
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	private(set) var processedGuidePhoto: UIImage?
 
+	/// Guide Grid
+	private(set) var isGuideGridEnabled: Bool = false
+
 	init() {
 		/// Guide Photo
 		loadSavedGuidePhotoIdentifier()
 		loadSavedGuidePhotoOpacity()
 		loadSavedGuidePhotoEffect()
+		
+		/// Guide Grid
+		loadSavedGuideGridSetting()
 	}
 
 	// MARK: - Starting the camera
@@ -297,6 +303,21 @@ final class ShotViewModel: Camera {
 		   let effect = GuidePhotoEffect(rawValue: savedEffect) {
 			self.currentGuidePhotoEffect = effect
 		}
+	}
+
+	// MARK: - Guide Grid Management
+
+	func toggleGuideGrid() {
+		isGuideGridEnabled.toggle()
+		saveGuideGridSetting()
+	}
+
+	private func saveGuideGridSetting() {
+		UserDefaults.standard.set(isGuideGridEnabled, forKey: "isGuideGridEnabled")
+	}
+
+	private func loadSavedGuideGridSetting() {
+		isGuideGridEnabled = UserDefaults.standard.bool(forKey: "isGuideGridEnabled")
 	}
 
 	// MARK: - Internal state observations
