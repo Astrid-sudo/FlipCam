@@ -25,4 +25,6 @@ protocol Camera: AnyObject {
 	var maxZoomFactor: CGFloat { get }
 	func setZoom(factor: CGFloat) async
 	func rampZoom(to factor: CGFloat) async
+	func saveGuidePhotoIdentifier(_ identifier: String)
+}
 }
