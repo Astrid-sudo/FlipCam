@@ -26,6 +26,8 @@ protocol Camera: AnyObject {
 	func setZoom(factor: CGFloat) async
 	func rampZoom(to factor: CGFloat) async
 	func saveGuidePhotoIdentifier(_ identifier: String)
+	var guidePhotoOpacity: Double { get }
+	func setGuidePhotoOpacity(_ opacity: Double)
 }
 
 @Observable
@@ -47,6 +49,7 @@ class PreviewCameraModel: Camera {
 	var error: Error?
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
+	var guidePhotoOpacity: Double = 0.5
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -81,7 +84,12 @@ class PreviewCameraModel: Camera {
 	func rampZoom(to factor: CGFloat) async {
 		zoomFactor = max(1.0, min(factor, maxZoomFactor))
 	}
+
 	func saveGuidePhotoIdentifier(_ identifier: String) {
 		logger.debug("saveGuidePhotoIdentifier isn't implemented in PreviewCamera.")
+	}
+
+	func setGuidePhotoOpacity(_ opacity: Double) {
+		logger.debug("setGuidePhotoOpacity isn't implemented in PreviewCamera.")
 	}
 }
