@@ -28,10 +28,12 @@ final class ShotViewModel: Camera {
 	/// Guide Photo
 	private(set) var guidePhoto: UIImage?
 	private(set) var guidePhotoIdentifier: String?
+	private(set) var guidePhotoOpacity: Double = 0.5 // Default opacity value
 
 	init() {
 		/// Guide Photo
 		loadSavedGuidePhotoIdentifier()
+		loadSavedGuidePhotoOpacity()
 	}
 
 	// MARK: - Starting the camera
@@ -129,6 +131,21 @@ final class ShotViewModel: Camera {
 		guidePhoto = nil
 		guidePhotoIdentifier = nil
 		UserDefaults.standard.removeObject(forKey: "guidePhotoIdentifier")
+	}
+
+	func setGuidePhotoOpacity(_ opacity: Double) {
+		self.guidePhotoOpacity = opacity
+		saveGuidePhotoOpacity()
+	}
+
+	private func saveGuidePhotoOpacity() {
+		UserDefaults.standard.set(guidePhotoOpacity, forKey: "guidePhotoOpacity")
+	}
+
+	private func loadSavedGuidePhotoOpacity() {
+		if let savedOpacity = UserDefaults.standard.object(forKey: "guidePhotoOpacity") as? Double {
+			self.guidePhotoOpacity = savedOpacity
+		}
 	}
 
 	// MARK: - Internal state observations
