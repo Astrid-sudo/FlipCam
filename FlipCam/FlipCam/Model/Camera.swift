@@ -28,6 +28,9 @@ protocol Camera: AnyObject {
 	func saveGuidePhotoIdentifier(_ identifier: String)
 	var guidePhotoOpacity: Double { get }
 	func setGuidePhotoOpacity(_ opacity: Double)
+	var currentGuidePhotoEffect: GuidePhotoEffect { get }
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
+	var isGuideGridEnabled: Bool { get set }
 }
 
 @Observable
@@ -50,6 +53,8 @@ class PreviewCameraModel: Camera {
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
 	var guidePhotoOpacity: Double = 0.5
+	var currentGuidePhotoEffect: GuidePhotoEffect = .normal
+	var isGuideGridEnabled: Bool = false
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -91,5 +96,9 @@ class PreviewCameraModel: Camera {
 
 	func setGuidePhotoOpacity(_ opacity: Double) {
 		logger.debug("setGuidePhotoOpacity isn't implemented in PreviewCamera.")
+	}
+
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
+		logger.debug("setGuidePhotoEffect isn't implemented in PreviewCamera.")
 	}
 }

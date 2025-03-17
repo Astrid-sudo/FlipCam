@@ -30,21 +30,11 @@ final class ShotViewModel: Camera {
 	private(set) var guidePhotoIdentifier: String?
 	private(set) var guidePhotoOpacity: Double = 0.5 // Default opacity value
 
-	/// Guide Photo Effects
-	enum GuidePhotoEffect: String, CaseIterable, Identifiable {
-		case normal = "Normal"
-		case contrast = "Contrast"
-		case inverse = "Inverse"
-		case outline = "Outline"
-		
-		var id: String { rawValue }
-	}
-
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	private(set) var processedGuidePhoto: UIImage?
 
 	/// Guide Grid
-	private(set) var isGuideGridEnabled: Bool = false
+	var isGuideGridEnabled: Bool = false
 
 	init() {
 		/// Guide Photo
