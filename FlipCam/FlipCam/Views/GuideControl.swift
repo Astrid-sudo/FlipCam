@@ -15,14 +15,12 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 	let camera: CameraModel
 
 	var body: some View {
-		VStack {
-			Spacer()
 			HStack {
 				gridButton
 				Spacer()
 				effectButtonsRow
 			}
-		}
+			.padding()
 	}
 
 	@ViewBuilder
@@ -54,7 +52,6 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 						))
 		}
 		.font(.title2)
-		.padding()
 	}
 
 	@ViewBuilder
@@ -63,7 +60,7 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 			camera.isGuideGridEnabled.toggle()
 		} label: {
 			Image(systemName: "grid")
-				.foregroundColor(.white)
+				.foregroundColor(camera.isGuideGridEnabled ? .yellow : .white)
 		}
 	}
 
