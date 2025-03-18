@@ -27,13 +27,7 @@ struct ShotView: View {
 						gridLines
 					}
 				}
-				.overlay {
-					VStack {
-						Spacer()
-						GuideControl(camera: camera)
-							.debugBorder(color: Color.red)
-					}
-				}
+			GuideControl(camera: camera)
 			OpacityControl(camera: camera)
 			MainToolbar(camera: camera)
 		}
