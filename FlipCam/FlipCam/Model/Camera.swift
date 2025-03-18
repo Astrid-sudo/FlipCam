@@ -31,6 +31,8 @@ protocol Camera: AnyObject {
 	var currentGuidePhotoEffect: GuidePhotoEffect { get }
 	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
 	var isGuideGridEnabled: Bool { get set }
+	var shouldShowGuidePhoto: Bool { get set }
+	func toggleGuidePhotoVisibility()
 }
 
 @Observable
@@ -55,6 +57,7 @@ class PreviewCameraModel: Camera {
 	var guidePhotoOpacity: Double = 0.5
 	var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	var isGuideGridEnabled: Bool = false
+	var shouldShowGuidePhoto: Bool = true
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -100,5 +103,9 @@ class PreviewCameraModel: Camera {
 
 	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
 		logger.debug("setGuidePhotoEffect isn't implemented in PreviewCamera.")
+	}
+
+	func toggleGuidePhotoVisibility() {
+		logger.debug("toggleGuidePhotoVisibility isn't implemented in PreviewCamera.")
 	}
 }

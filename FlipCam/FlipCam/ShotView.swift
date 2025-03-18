@@ -18,7 +18,9 @@ struct ShotView: View {
 					await camera.start()
 				}
 				.overlay {
-					guidePhoto
+					if camera.shouldShowGuidePhoto {
+						guidePhoto
+					}
 				}
 				.overlay {
 					if camera.isGuideGridEnabled {

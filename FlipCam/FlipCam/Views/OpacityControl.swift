@@ -17,10 +17,11 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 	var body: some View {
 		HStack {
 			Button {
+				camera.toggleGuidePhotoVisibility()
 			} label: {
-				Image(systemName: "eye")
+				Image(systemName: camera.shouldShowGuidePhoto ? "eye" : "eye.slash")
 					.font(.title2)
-					.foregroundColor(.white)
+					.foregroundColor(camera.shouldShowGuidePhoto ? .yellow : .white)
 					.padding()
 			}
 
@@ -30,6 +31,7 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 			), in: 0.1...1.0, step: 0.05)
 
 			Button {
+				camera.setGuidePhotoOpacity(0.5)
 			} label: {
 				Image(systemName: "circle.lefthalf.filled")
 					.font(.title2)
