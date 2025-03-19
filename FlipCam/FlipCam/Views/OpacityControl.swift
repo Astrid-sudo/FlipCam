@@ -20,9 +20,9 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 				camera.toggleGuidePhotoVisibility()
 			} label: {
 				Image(systemName: camera.shouldShowGuidePhoto ? "eye" : "eye.slash")
-					.font(.title2)
+					.adaptiveSpacing()
 					.foregroundColor(camera.shouldShowGuidePhoto ? .yellow : .white)
-					.padding()
+					.adaptiveButtonSize()
 			}
 
 			Slider(value: Binding(
@@ -34,9 +34,9 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 				camera.setGuidePhotoOpacity(0.5)
 			} label: {
 				Image(systemName: "circle.lefthalf.filled")
-					.font(.title2)
+					.adaptiveSpacing()
 					.foregroundColor(.white)
-					.padding()
+					.adaptiveButtonSize()
 			}
 		}
 	}

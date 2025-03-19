@@ -25,7 +25,7 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 
 	@ViewBuilder
 	private var effectButtonsRow: some View {
-		HStack(spacing: 10) {
+		HStack(spacing: horizontalSizeClass == .regular ? 20 : 10) {
 			EffectButton(systemName: "photo", 
 						effect: .normal, 
 						selectedEffect: Binding(
@@ -51,7 +51,7 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 							set: { camera.setGuidePhotoEffect($0) }
 						))
 		}
-		.font(.title2)
+		.adaptiveSpacing()
 	}
 
 	@ViewBuilder
@@ -77,6 +77,7 @@ struct EffectButton: View {
 		} label: {
 			Image(systemName: systemName)
 				.foregroundColor(selectedEffect == effect ? .yellow : .white)
+				.adaptiveButtonSize()
 		}
 	}
 }

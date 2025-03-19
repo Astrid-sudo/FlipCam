@@ -11,8 +11,11 @@ import SwiftUI
 struct CaptureButton<CameraModel: Camera>: View {
 
 	@State var camera: CameraModel
+	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-	private let mainButtonDimension: CGFloat = 68
+	private var mainButtonDimension: CGFloat {
+		horizontalSizeClass == .regular ? 88 : 68
+	}
 
 	var body: some View {
 		PhotoCaptureButton {

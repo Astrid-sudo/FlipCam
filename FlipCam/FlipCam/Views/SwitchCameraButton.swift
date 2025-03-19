@@ -18,9 +18,9 @@ struct SwitchCameraButton<CameraModel: Camera>: View {
 			}
 		} label: {
 			Image(systemName: "arrow.triangle.2.circlepath")
+				.adaptiveSpacing()
+				.adaptiveButtonSize()
 		}
-		.buttonStyle(DefaultButtonStyle(size: .large))
-		.frame(width: largeButtonSize.width, height: largeButtonSize.height)
 		.allowsHitTesting(!camera.isSwitchingCameraDevices)
 	}
 }

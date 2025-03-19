@@ -11,6 +11,36 @@ import UIKit
 let largeButtonSize = CGSize(width: 64, height: 64)
 let smallButtonSize = CGSize(width: 32, height: 32)
 
+extension View {
+	func adaptiveButtonSize() -> some View {
+		self.modifier(AdaptiveButtonSize())
+	}
+
+	func adaptiveSpacing() -> some View {
+		self.modifier(AdaptiveSpacing())
+	}
+}
+
+struct AdaptiveButtonSize: ViewModifier {
+	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+
+	func body(content: Content) -> some View {
+		content
+			.frame(width: horizontalSizeClass == .regular ? 44 : 36,
+				   height: horizontalSizeClass == .regular ? 44 : 36)
+	}
+}
+
+struct AdaptiveSpacing: ViewModifier {
+	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+
+	func body(content: Content) -> some View {
+		content
+			.font(.system(size: horizontalSizeClass == .regular ? 32 : 24))
+	}
+}
+
+
 @MainActor
 protocol PlatformView: View {
 	var verticalSizeClass: UserInterfaceSizeClass? { get }
@@ -30,35 +60,19 @@ extension Image {
 	}
 }
 
-struct DefaultButtonStyle: ButtonStyle {
-
-	@Environment(\.isEnabled) private var isEnabled: Bool
-	@Environment(\.verticalSizeClass) private var verticalSizeClass
-	@Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-	enum Size: CGFloat {
-		case small = 22
-		case large = 24
+extension View {
+	func debugBorder(color: Color = .random) -> some View {
+		self
+			.border(color)
 	}
+}
 
-	private let size: Size
-
-	init(size: Size) {
-		self.size = size
-	}
-
-	func makeBody(configuration: Configuration) -> some View {
-		configuration.label
-			.foregroundColor(isEnabled ? .primary : Color(white: 0.4))
-			.font(.system(size: size.rawValue))
-			// Pad buttons on devices that use the `regular` size class,
-			// and also when explicitly requesting large buttons.
-			.padding(isRegularSize || size == .large ? 10.0 : 0)
-			.background(.black.opacity(0.4))
-			.clipShape(size == .small ? AnyShape(Rectangle()) : AnyShape(Circle()))
-	}
-
-	var isRegularSize: Bool {
-		horizontalSizeClass == .regular && verticalSizeClass == .regular
+extension Color {
+	static var random: Color {
+		Color(
+			red: .random(in: 0...1),
+			green: .random(in: 0...1),
+			blue: .random(in: 0...1)
+		)
 	}
 }

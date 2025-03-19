@@ -27,9 +27,9 @@ struct FlashlightButton<CameraModel: Camera>: View {
             }
         } label: {
             Image(systemName: flashIconName)
-                .font(.system(size: 24))
+                .adaptiveSpacing()
                 .foregroundColor(flashIconColor)
-                .frame(width: 44, height: 44)
+                .adaptiveButtonSize()
                 .background(Color.black.opacity(0.5))
                 .clipShape(Circle())
         }
