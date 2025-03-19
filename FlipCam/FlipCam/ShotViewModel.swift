@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+enum FlashMode {
+	case on
+	case off
+	case auto
+}
+
 @Observable
 final class ShotViewModel: Camera {
 
@@ -36,6 +42,8 @@ final class ShotViewModel: Camera {
 
 	/// Guide Grid
 	var isGuideGridEnabled: Bool = false
+
+	var flashMode: FlashMode = .off
 
 	init() {
 		/// Guide Photo
@@ -377,5 +385,10 @@ final class ShotViewModel: Camera {
 				}
 			}
 		}
+	}
+
+	func setFlashMode(_ mode: FlashMode) async {
+		flashMode = mode
+		await captureService.setFlashMode(mode)
 	}
 }

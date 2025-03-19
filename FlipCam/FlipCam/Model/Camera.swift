@@ -25,6 +25,7 @@ protocol Camera: AnyObject {
 	var maxZoomFactor: CGFloat { get }
 	func setZoom(factor: CGFloat) async
 	func rampZoom(to factor: CGFloat) async
+	func setFlashMode(_ mode: FlashMode) async
 	func saveGuidePhotoIdentifier(_ identifier: String)
 	var guidePhotoOpacity: Double { get }
 	func setGuidePhotoOpacity(_ opacity: Double)
@@ -33,6 +34,7 @@ protocol Camera: AnyObject {
 	var isGuideGridEnabled: Bool { get set }
 	var shouldShowGuidePhoto: Bool { get set }
 	func toggleGuidePhotoVisibility()
+	var flashMode: FlashMode { get set }
 }
 
 @Observable
@@ -58,6 +60,7 @@ class PreviewCameraModel: Camera {
 	var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	var isGuideGridEnabled: Bool = false
 	var shouldShowGuidePhoto: Bool = true
+	var flashMode: FlashMode = .off
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -107,5 +110,9 @@ class PreviewCameraModel: Camera {
 
 	func toggleGuidePhotoVisibility() {
 		logger.debug("toggleGuidePhotoVisibility isn't implemented in PreviewCamera.")
+	}
+
+	func setFlashMode(_ mode: FlashMode) async {
+		logger.debug("setFlashMode isn't implemented in PreviewCamera.")
 	}
 }

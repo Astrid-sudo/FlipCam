@@ -17,14 +17,18 @@ struct MainToolbar<CameraModel: Camera>: PlatformView {
 
 	var body: some View {
 		HStack {
-			ThumbnailButton(camera: camera)
-			// Hide the thumbnail button when a person interacts with capture controls.
-				.opacity(camera.prefersMinimizedUI ? 0 : 1)
+			HStack(spacing: 20) {
+				ThumbnailButton(camera: camera)
+				FlashlightButton(camera: camera)
+			}
 			Spacer()
 			CaptureButton(camera: camera)
 			Spacer()
-			SwitchCameraButton(camera: camera)
-				.opacity(camera.prefersMinimizedUI ? 0 : 1)
+			HStack(spacing: 20) {
+				Color.clear
+					.frame(width: 44, height: 44)
+				SwitchCameraButton(camera: camera)
+			}
 		}
 		.foregroundColor(.white)
 		.font(.system(size: 24))

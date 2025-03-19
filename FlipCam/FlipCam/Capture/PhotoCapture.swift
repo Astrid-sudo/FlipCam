@@ -16,6 +16,8 @@ final class PhotoCapture: OutputService {
 
 	@Published private(set) var captureActivity: CaptureActivity = .idle
 
+	private var flashMode: AVCaptureDevice.FlashMode = .off
+
 	let output = AVCapturePhotoOutput()
 
 	private var photoOutput: AVCapturePhotoOutput { output }
@@ -51,7 +53,7 @@ final class PhotoCapture: OutputService {
 		}
 
 		photoSettings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-
+		photoSettings.flashMode = flashMode
 		return photoSettings
 	}
 
@@ -72,6 +74,10 @@ final class PhotoCapture: OutputService {
 		photoOutput.isResponsiveCaptureEnabled = photoOutput.isResponsiveCaptureSupported
 		photoOutput.isFastCapturePrioritizationEnabled = photoOutput.isFastCapturePrioritizationSupported
 		photoOutput.isAutoDeferredPhotoDeliveryEnabled = photoOutput.isAutoDeferredPhotoDeliverySupported
+	}
+
+	func setFlashMode(_ mode: AVCaptureDevice.FlashMode) {
+		flashMode = mode
 	}
 }
 

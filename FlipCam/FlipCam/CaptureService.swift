@@ -292,4 +292,18 @@ actor CaptureService {
 			}
 		}
 	}
+
+	func setFlashMode(_ mode: FlashMode) async {
+		var flashMode: AVCaptureDevice.FlashMode {
+			switch mode {
+			case .on:
+					.on
+			case .off:
+					.off
+			case .auto:
+					.auto
+			}
+		}
+		photoCapture.setFlashMode(flashMode)
+	}
 }
