@@ -12,21 +12,22 @@ struct ShotView: View {
 
 	var body: some View {
 		VStack {
-			CameraPreview(source: camera.previewSource, camera: camera)
-				.debugBorder(color: Color.green)
-				.task {
-					await camera.start()
-				}
-				.overlay {
-					if camera.shouldShowGuidePhoto {
-						guidePhoto
+			PreviewContainer(camera: camera) {
+				CameraPreview(source: camera.previewSource, camera: camera)
+					.task {
+						await camera.start()
 					}
-				}
-				.overlay {
-					if camera.isGuideGridEnabled {
-						gridLines
+					.overlay {
+						if camera.shouldShowGuidePhoto {
+							guidePhoto
+						}
 					}
-				}
+					.overlay {
+						if camera.isGuideGridEnabled {
+							gridLines
+						}
+					}
+			}
 			GuideControl(camera: camera)
 			OpacityControl(camera: camera)
 			MainToolbar(camera: camera)
