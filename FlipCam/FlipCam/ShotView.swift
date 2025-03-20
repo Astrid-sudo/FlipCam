@@ -13,23 +13,25 @@ struct ShotView: View {
 	var body: some View {
 		VStack {
 			PreviewContainer(camera: camera) {
-				ZStack {
-					CameraPreview(source: camera.previewSource, camera: camera)
-						.task {
-							await camera.start()
-						}
-						.aspectRatio(3/4, contentMode: .fit)
-						.overlay(alignment: .center) {
-							GeometryReader { geometry in
-								if camera.shouldShowGuidePhoto {
-									guidePhoto(width: geometry.size.width, height: geometry.size.height)
-								}
-								if camera.isGuideGridEnabled {
-									gridLines
-										.frame(width: geometry.size.width, height: geometry.size.height)
-								}
+				CameraPreview(source: camera.previewSource, camera: camera)
+					.task {
+						await camera.start()
+					}
+					.aspectRatio(3/4, contentMode: .fit)
+					.overlay(alignment: .center) {
+						GeometryReader { geometry in
+							if camera.shouldShowGuidePhoto {
+								guidePhoto(width: geometry.size.width, height: geometry.size.height)
 							}
 						}
+					}
+			}
+			.overlay(alignment: .center) {
+				GeometryReader { geometry in
+					if camera.isGuideGridEnabled {
+						gridLines
+							.frame(width: geometry.size.width, height: geometry.size.height)
+					}
 				}
 			}
 			GuideControl(camera: camera)
