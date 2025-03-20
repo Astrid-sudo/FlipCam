@@ -20,10 +20,8 @@ struct CameraPreview: UIViewRepresentable {
 
 	func makeUIView(context: Context) -> PreviewView {
 		let preview = PreviewView()
-		// Connect the preview layer to the capture session.
 		source.connect(to: preview)
 
-		// Add pinch gesture recognizer
 		let pinchGesture = UIPinchGestureRecognizer(target: context.coordinator,
 												   action: #selector(Coordinator.handlePinch(_:)))
 		preview.addGestureRecognizer(pinchGesture)
@@ -31,18 +29,12 @@ struct CameraPreview: UIViewRepresentable {
 		return preview
 	}
 
-	func updateUIView(_ previewView: PreviewView, context: Context) {
-		// No-op.
-	}
+	func updateUIView(_ previewView: PreviewView, context: Context) {}
 
 	func makeCoordinator() -> Coordinator {
 		Coordinator(self)
 	}
 
-	/// A class that presents the captured content.
-	///
-	/// This class owns the `AVCaptureVideoPreviewLayer` that presents the captured content.
-	///
 	class PreviewView: UIView, PreviewTarget {
 
 		init() {
@@ -62,7 +54,6 @@ struct CameraPreview: UIViewRepresentable {
 			fatalError("init(coder:) has not been implemented")
 		}
 
-		// Use the preview layer as the view's backing layer.
 		override class var layerClass: AnyClass {
 			AVCaptureVideoPreviewLayer.self
 		}
@@ -72,8 +63,6 @@ struct CameraPreview: UIViewRepresentable {
 		}
 
 		nonisolated func setSession(_ session: AVCaptureSession) {
-			// Connects the session with the preview layer, which allows the layer
-			// to provide a live view of the captured content.
 			Task { @MainActor in
 				previewLayer.session = session
 			}
@@ -81,24 +70,14 @@ struct CameraPreview: UIViewRepresentable {
 	}
 }
 
-/// A protocol that enables a preview source to connect to a preview target.
-///
-/// The app provides an instance of this type to the client tier so it can connect
-/// the capture session to the `PreviewView` view. It uses these protocols
-/// to prevent explicitly exposing the capture objects to the UI layer.
-///
 protocol PreviewSource: Sendable {
-	// Connects a preview destination to this source.
 	func connect(to target: PreviewTarget)
 }
 
-/// A protocol that passes the app's capture session to the `CameraPreview` view.
 protocol PreviewTarget {
-	// Sets the capture session on the destination.
 	func setSession(_ session: AVCaptureSession)
 }
 
-/// The app's default `PreviewSource` implementation.
 struct DefaultPreviewSource: PreviewSource {
 
 	private let session: AVCaptureSession
