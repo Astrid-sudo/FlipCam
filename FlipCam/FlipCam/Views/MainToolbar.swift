@@ -12,6 +12,7 @@ struct MainToolbar<CameraModel: Camera>: PlatformView {
 
 	@Environment(\.verticalSizeClass) var verticalSizeClass
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+	@Environment(\.colorScheme) var colorScheme
 
 	@State var camera: CameraModel
 
@@ -30,7 +31,7 @@ struct MainToolbar<CameraModel: Camera>: PlatformView {
 				SwitchCameraButton(camera: camera)
 			}
 		}
-		.foregroundColor(.white)
+		.foregroundColor(Color.themeForeground(colorScheme: colorScheme))
 		.font(.system(size: 24))
 		.frame(width: width, height: height)
 		.padding([.leading, .trailing])

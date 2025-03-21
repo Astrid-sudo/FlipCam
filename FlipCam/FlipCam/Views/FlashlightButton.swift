@@ -10,6 +10,7 @@ import SwiftUI
 struct FlashlightButton<CameraModel: Camera>: View {
 
     @State var camera: CameraModel
+	@Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         Button {
@@ -30,8 +31,6 @@ struct FlashlightButton<CameraModel: Camera>: View {
                 .adaptiveSpacing()
                 .foregroundColor(flashIconColor)
                 .adaptiveButtonSize()
-                .background(Color.black.opacity(0.5))
-                .clipShape(Circle())
         }
     }
     
@@ -51,11 +50,11 @@ struct FlashlightButton<CameraModel: Camera>: View {
     private var flashIconColor: Color {
         switch camera.flashMode {
         case .off:
-            return .white
+			return Color.themeForeground(colorScheme: colorScheme)
         case .on:
-            return .yellow
+			return Color.themeAccent(colorScheme: colorScheme)
         case .auto:
-            return .yellow
+			return Color.themeAccent(colorScheme: colorScheme)
         }
     }
 } 

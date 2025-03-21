@@ -11,6 +11,7 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 
 	@Environment(\.verticalSizeClass) var verticalSizeClass
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+	@Environment(\.colorScheme) var colorScheme
 
 	let camera: CameraModel
 
@@ -60,7 +61,7 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 			camera.isGuideGridEnabled.toggle()
 		} label: {
 			Image(systemName: "grid")
-				.foregroundColor(camera.isGuideGridEnabled ? .yellow : .white)
+				.foregroundColor(camera.isGuideGridEnabled ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 		}
 	}
 
@@ -70,13 +71,14 @@ struct EffectButton: View {
 	let systemName: String
 	let effect: GuidePhotoEffect
 	@Binding var selectedEffect: GuidePhotoEffect
+	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
 		Button {
 			selectedEffect = effect
 		} label: {
 			Image(systemName: systemName)
-				.foregroundColor(selectedEffect == effect ? .yellow : .white)
+				.foregroundColor(selectedEffect == effect ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 				.adaptiveButtonSize()
 		}
 	}

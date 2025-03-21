@@ -12,6 +12,7 @@ struct CaptureButton<CameraModel: Camera>: View {
 
 	@State var camera: CameraModel
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+	@Environment(\.colorScheme) var colorScheme
 
 	private var mainButtonDimension: CGFloat {
 		horizontalSizeClass == .regular ? 88 : 68
@@ -31,6 +32,7 @@ struct CaptureButton<CameraModel: Camera>: View {
 private struct PhotoCaptureButton: View {
 	private let action: () -> Void
 	private let lineWidth = CGFloat(4.0)
+	@Environment(\.colorScheme) var colorScheme
 
 	init(action: @escaping () -> Void) {
 		self.action = action
@@ -40,13 +42,13 @@ private struct PhotoCaptureButton: View {
 		ZStack {
 			Circle()
 				.stroke(lineWidth: lineWidth)
-				.fill(.white)
+				.fill(Color.themeForeground(colorScheme: colorScheme))
 			Button {
 				action()
 			} label: {
 				Circle()
 					.inset(by: lineWidth * 1.2)
-					.fill(.white)
+					.fill(Color.themeForeground(colorScheme: colorScheme))
 			}
 			.buttonStyle(PhotoButtonStyle())
 		}

@@ -11,6 +11,7 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 
 	@Environment(\.verticalSizeClass) var verticalSizeClass
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
+	@Environment(\.colorScheme) var colorScheme
 
 	@State var camera: CameraModel
 
@@ -21,7 +22,7 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 			} label: {
 				Image(systemName: camera.shouldShowGuidePhoto ? "eye" : "eye.slash")
 					.adaptiveSpacing()
-					.foregroundColor(camera.shouldShowGuidePhoto ? .yellow : .white)
+					.foregroundColor(camera.shouldShowGuidePhoto ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()
 			}
 
@@ -29,15 +30,17 @@ struct OpacityControl<CameraModel: Camera>: PlatformView {
 				get: { camera.guidePhotoOpacity },
 				set: { camera.setGuidePhotoOpacity($0) }
 			), in: 0.1...1.0, step: 0.05)
+			.tint(Color.themeAccent(colorScheme: colorScheme))
 
 			Button {
 				camera.setGuidePhotoOpacity(0.5)
 			} label: {
 				Image(systemName: "circle.lefthalf.filled")
 					.adaptiveSpacing()
-					.foregroundColor(.white)
+					.foregroundColor(Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()
 			}
 		}
+		.padding()
 	}
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ShotView: View {
 	@State private var camera = ShotViewModel()
+	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
 		VStack {
@@ -55,7 +56,7 @@ struct ShotView: View {
 	@ViewBuilder
 	private var gridLines: some View {
 		GridLines()
-			.stroke(Color.yellow.opacity(0.7), lineWidth: 1.0)
+			.stroke(Color.themeAccentWithOpacity(colorScheme: colorScheme), lineWidth: 1.0)
 			.allowsHitTesting(false)
 	}
 
