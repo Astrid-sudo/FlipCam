@@ -68,6 +68,7 @@ final class ShotViewModel: Camera {
 	func start() async {
 		guard await captureService.isAuthorized else {
 			cameraStatus = .unauthorized
+			handleError(CameraError.unauthorized)
 			return
 		}
 		do {
@@ -77,6 +78,7 @@ final class ShotViewModel: Camera {
 		} catch {
 			logger.error("Failed to start capture service. \(error)")
 			cameraStatus = .failed
+			handleError(error)
 		}
 	}
 
@@ -85,7 +87,11 @@ final class ShotViewModel: Camera {
 	func switchCameraDevices() async {
 		isSwitchingCameraDevices = true
 		defer { isSwitchingCameraDevices = false }
-		await captureService.selectNextCameraDevice()
+		do {
+			try await captureService.selectNextCameraDevice()
+		} catch {
+			handleError(error)
+		}
 	}
 
 	// MARK: - Photo capture
@@ -96,7 +102,7 @@ final class ShotViewModel: Camera {
 			let photo = try await captureService.capturePhoto()
 			try await mediaLibrary.save(photo: photo)
 		} catch {
-			self.error = error
+			handleError(error)
 		}
 	}
 
