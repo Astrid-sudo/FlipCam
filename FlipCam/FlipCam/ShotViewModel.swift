@@ -115,7 +115,15 @@ final class ShotViewModel: Camera {
 
 	// MARK: - Guide Photo Management
 
-	func loadGuidePhoto() async {
+	func applyGuidePhoto(_ identifier: String) {
+		saveGuidePhotoIdentifier(identifier)
+		resetGuidePhotoSetting()
+		Task {
+			await loadGuidePhoto()
+		}
+	}
+
+	private func loadGuidePhoto() async {
 		guard let identifier = guidePhotoIdentifier else {
 			guidePhoto = nil
 			processedGuidePhoto = nil
@@ -133,37 +141,19 @@ final class ShotViewModel: Camera {
 		}
 	}
 
-	func saveGuidePhotoIdentifier(_ identifier: String) {
+	private func saveGuidePhotoIdentifier(_ identifier: String) {
 		self.guidePhotoIdentifier = identifier
 		UserDefaults.standard.set(identifier, forKey: "guidePhotoIdentifier")
-
-		self.shouldShowGuidePhoto = true
-		saveGuidePhotoVisibility()
-
-		self.guidePhotoOpacity = 0.5
-		saveGuidePhotoOpacity()
-
-		self.currentGuidePhotoEffect = .normal
-		saveGuidePhotoEffect()
-
-		Task {
-			await loadGuidePhoto()
-		}
 	}
 
-	func loadSavedGuidePhotoIdentifier() {
+
+	private func loadSavedGuidePhotoIdentifier() {
 		if let savedIdentifier = UserDefaults.standard.string(forKey: "guidePhotoIdentifier") {
 			self.guidePhotoIdentifier = savedIdentifier
 			Task {
 				await loadGuidePhoto()
 			}
 		}
-	}
-
-	func clearGuidePhoto() {
-		guidePhoto = nil
-		guidePhotoIdentifier = nil
-		UserDefaults.standard.removeObject(forKey: "guidePhotoIdentifier")
 	}
 
 	func setGuidePhotoOpacity(_ opacity: Double) {
@@ -179,6 +169,17 @@ final class ShotViewModel: Camera {
 		if let savedOpacity = UserDefaults.standard.object(forKey: "guidePhotoOpacity") as? Double {
 			self.guidePhotoOpacity = savedOpacity
 		}
+	}
+
+	private func resetGuidePhotoSetting() {
+		self.shouldShowGuidePhoto = true
+		saveGuidePhotoVisibility()
+
+		self.guidePhotoOpacity = 0.5
+		saveGuidePhotoOpacity()
+
+		self.currentGuidePhotoEffect = .normal
+		saveGuidePhotoEffect()
 	}
 
 	// MARK: - Guide Photo Effects

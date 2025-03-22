@@ -26,7 +26,7 @@ protocol Camera: AnyObject {
 	func setZoom(factor: CGFloat) async
 	func rampZoom(to factor: CGFloat) async
 	func setFlashMode(_ mode: FlashMode) async
-	func saveGuidePhotoIdentifier(_ identifier: String)
+	func applyGuidePhoto(_ identifier: String)
 	var guidePhotoOpacity: Double { get }
 	func setGuidePhotoOpacity(_ opacity: Double)
 	var currentGuidePhotoEffect: GuidePhotoEffect { get }
@@ -96,8 +96,8 @@ class PreviewCameraModel: Camera {
 		zoomFactor = max(1.0, min(factor, maxZoomFactor))
 	}
 
-	func saveGuidePhotoIdentifier(_ identifier: String) {
-		logger.debug("saveGuidePhotoIdentifier isn't implemented in PreviewCamera.")
+	func applyGuidePhoto(_ identifier: String) {
+		logger.debug("applyGuidePhoto isn't implemented in PreviewCamera.")
 	}
 
 	func setGuidePhotoOpacity(_ opacity: Double) {

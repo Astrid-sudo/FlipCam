@@ -28,7 +28,7 @@ struct ThumbnailButton<CameraModel: Camera>: View {
 			if let newItem {
 				Task {
 					if let identifier = newItem.itemIdentifier {
-						camera.saveGuidePhotoIdentifier(identifier)
+						camera.applyGuidePhoto(identifier)
 					} else {
 						print("Can't find identifier")
 					}
