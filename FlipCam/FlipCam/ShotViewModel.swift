@@ -60,7 +60,6 @@ final class ShotViewModel: Camera {
 	// MARK: - Error Handling
 	private func handleError(_ error: Error) {
 		self.error = error
-		self.errorMessage = error.localizedDescription
 		self.showErrorAlert = true
 	}
 
