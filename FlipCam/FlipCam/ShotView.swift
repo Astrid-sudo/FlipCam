@@ -39,6 +39,13 @@ struct ShotView: View {
 			OpacityControl(camera: camera)
 			MainToolbar(camera: camera)
 		}
+		.alert("Error", isPresented: .constant(camera.showErrorAlert)) {
+			Button("OK") {
+				camera.showErrorAlert = false
+			}
+		} message: {
+			Text(camera.error?.localizedDescription ?? "Error occurred, please restart the app.")
+		}
 	}
 
 	@ViewBuilder

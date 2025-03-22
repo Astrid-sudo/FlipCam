@@ -20,11 +20,11 @@ protocol Camera: AnyObject {
 	func capturePhoto() async
 	var shouldFlashScreen: Bool { get }
 	var thumbnail: CGImage? { get }
-	var error: Error? { get }
+	var error: Error? { set get }
 	var zoomFactor: CGFloat { get }
 	var maxZoomFactor: CGFloat { get }
-	func setZoom(factor: CGFloat) async
-	func rampZoom(to factor: CGFloat) async
+	func setZoom(factor: CGFloat) async throws
+	func rampZoom(to factor: CGFloat) async throws
 	func setFlashMode(_ mode: FlashMode) async
 	func applyGuidePhoto(_ identifier: String)
 	var guidePhotoOpacity: Double { get }
@@ -35,6 +35,7 @@ protocol Camera: AnyObject {
 	var shouldShowGuidePhoto: Bool { get set }
 	func toggleGuidePhotoVisibility()
 	var flashMode: FlashMode { get set }
+	var showErrorAlert: Bool { get set }
 }
 
 @Observable
@@ -61,6 +62,8 @@ class PreviewCameraModel: Camera {
 	var isGuideGridEnabled: Bool = false
 	var shouldShowGuidePhoto: Bool = true
 	var flashMode: FlashMode = .off
+	var showErrorAlert: Bool = false
+
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -88,11 +91,11 @@ class PreviewCameraModel: Camera {
 		logger.debug("Syncing state isn't implemented in PreviewCamera.")
 	}
 
-	func setZoom(factor: CGFloat) async {
+	func setZoom(factor: CGFloat) async throws {
 		zoomFactor = max(1.0, min(factor, maxZoomFactor))
 	}
 
-	func rampZoom(to factor: CGFloat) async {
+	func rampZoom(to factor: CGFloat) async throws {
 		zoomFactor = max(1.0, min(factor, maxZoomFactor))
 	}
 

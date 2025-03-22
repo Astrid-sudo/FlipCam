@@ -67,7 +67,7 @@ actor CaptureService {
 			captureSession.sessionPreset = .photo
 			try addOutput(photoCapture.output)
 
-			monitorSystemPreferredCamera()
+			try monitorSystemPreferredCamera()
 			createRotationCoordinator(for: defaultCamera)
 			observeSubjectAreaChanges(of: defaultCamera)
 
@@ -95,19 +95,20 @@ actor CaptureService {
 		}
 	}
 
-	private var currentDevice: AVCaptureDevice {
+	private func getCurrentDevice() throws -> AVCaptureDevice {
 		guard let device = activeCameraInput?.device else {
-			fatalError("No device found for current video input.")
+			logger.error("No device found for current video input")
+			throw CameraError.videoDeviceUnavailable
 		}
 		return device
 	}
 
 	// MARK: - Device selection
 
-	func selectNextCameraDevice() {
+	func selectNextCameraDevice() throws {
 		let cameraDevices = deviceLookup.cameras
 
-		let selectedIndex = cameraDevices.firstIndex(of: currentDevice) ?? 0
+		let selectedIndex = try cameraDevices.firstIndex(of: getCurrentDevice()) ?? 0
 		var nextIndex = selectedIndex + 1
 		if nextIndex == cameraDevices.endIndex {
 			nextIndex = 0
@@ -120,7 +121,10 @@ actor CaptureService {
 	}
 
 	private func changeCaptureDevice(to device: AVCaptureDevice) {
-		guard let currentInput = activeCameraInput else { fatalError() }
+		guard let currentInput = activeCameraInput else {
+			logger.error("No active camera input found")
+			return
+		}
 
 		captureSession.beginConfiguration()
 		defer { captureSession.commitConfiguration() }
@@ -135,10 +139,10 @@ actor CaptureService {
 		}
 	}
 
-	private func monitorSystemPreferredCamera() {
+	private func monitorSystemPreferredCamera() throws {
 		Task {
 			for await camera in systemPreferredCamera.changes {
-				if let camera, currentDevice != camera {
+				if let camera, try getCurrentDevice() != camera {
 					logger.debug("Switching camera selection to the system-preferred camera.")
 					changeCaptureDevice(to: camera)
 				}
@@ -211,7 +215,7 @@ actor CaptureService {
 	}
 
 	private func focusAndExpose(at devicePoint: CGPoint, isUserInitiated: Bool) throws {
-		let device = currentDevice
+		let device = try getCurrentDevice()
 
 		try device.lockForConfiguration()
 
@@ -233,8 +237,8 @@ actor CaptureService {
 
 	// MARK: - Zoom
 
-	func setZoom(factor: CGFloat) async {
-		let device = currentDevice
+	func setZoom(factor: CGFloat) async throws {
+		let device = try getCurrentDevice()
 		do {
 			try device.lockForConfiguration()
 			device.videoZoomFactor = max(1.0, min(factor, device.maxAvailableVideoZoomFactor))
@@ -244,8 +248,8 @@ actor CaptureService {
 		}
 	}
 
-	func rampZoom(to factor: CGFloat) async {
-		let device = currentDevice
+	func rampZoom(to factor: CGFloat) async throws {
+		let device = try getCurrentDevice()
 		do {
 			try device.lockForConfiguration()
 			device.ramp(toVideoZoomFactor: max(1.0, min(factor, device.maxAvailableVideoZoomFactor)),

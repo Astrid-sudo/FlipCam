@@ -106,12 +106,22 @@ class Coordinator: NSObject {
 		case .changed:
 			let newZoom = startZoom * gesture.scale
 			Task {
-				await parent.camera.setZoom(factor: newZoom)
+				do {
+					try await parent.camera.setZoom(factor: newZoom)
+				} catch {
+					parent.camera.error = error
+					parent.camera.showErrorAlert = true
+				}
 			}
 		case .ended:
 			let finalZoom = startZoom * gesture.scale
 			Task {
-				await parent.camera.rampZoom(to: finalZoom)
+				do {
+					try await parent.camera.rampZoom(to: finalZoom)
+				} catch {
+					parent.camera.error = error
+					parent.camera.showErrorAlert = true
+				}
 			}
 		default:
 			break

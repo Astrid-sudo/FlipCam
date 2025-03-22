@@ -27,7 +27,8 @@ final class ShotViewModel: Camera {
 	private(set) var prefersMinimizedUI = false
 	private(set) var shouldFlashScreen = false
 	private(set) var thumbnail: CGImage?
-	private(set) var error: Error?
+	var error: Error?
+	var showErrorAlert = false
 	private(set) var zoomFactor: CGFloat = 1.0
 	private(set) var maxZoomFactor: CGFloat = 1.0
 
@@ -54,6 +55,13 @@ final class ShotViewModel: Camera {
 		
 		/// Guide Grid
 		loadSavedGuideGridSetting()
+	}
+
+	// MARK: - Error Handling
+	private func handleError(_ error: Error) {
+		self.error = error
+		self.errorMessage = error.localizedDescription
+		self.showErrorAlert = true
 	}
 
 	// MARK: - Starting the camera
@@ -97,13 +105,13 @@ final class ShotViewModel: Camera {
 		await captureService.focusAndExpose(at: point)
 	}
 
-	func setZoom(factor: CGFloat) async {
-		await captureService.setZoom(factor: factor)
+	func setZoom(factor: CGFloat) async throws {
+		try await captureService.setZoom(factor: factor)
 		zoomFactor = factor
 	}
 
-	func rampZoom(to factor: CGFloat) async {
-		await captureService.rampZoom(to: factor)
+	func rampZoom(to factor: CGFloat) async throws {
+		try await captureService.rampZoom(to: factor)
 		zoomFactor = factor
 	}
 
