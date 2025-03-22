@@ -101,7 +101,11 @@ final class ShotViewModel: Camera {
 	}
 
 	func focusAndExpose(at point: CGPoint) async {
-		await captureService.focusAndExpose(at: point)
+		do {
+			try await captureService.focusAndExpose(at: point)
+		} catch {
+			handleError(error)
+		}
 	}
 
 	func setZoom(factor: CGFloat) async throws {

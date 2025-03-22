@@ -68,7 +68,7 @@ actor CaptureService {
 			try addOutput(photoCapture.output)
 
 			try monitorSystemPreferredCamera()
-			createRotationCoordinator(for: defaultCamera)
+			try createRotationCoordinator(for: defaultCamera)
 			observeSubjectAreaChanges(of: defaultCamera)
 
 			isSetUp = true
@@ -132,7 +132,7 @@ actor CaptureService {
 		captureSession.removeInput(currentInput)
 		do {
 			activeCameraInput = try addInput(for: device)
-			createRotationCoordinator(for: device)
+			try createRotationCoordinator(for: device)
 			observeSubjectAreaChanges(of: device)
 		} catch {
 			logger.error("Failed to change capture device: \(error), keep the current one.")
@@ -153,10 +153,10 @@ actor CaptureService {
 
 	// MARK: - Rotation handling
 
-	private func createRotationCoordinator(for device: AVCaptureDevice) {
-		rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: videoPreviewLayer)
+	private func createRotationCoordinator(for device: AVCaptureDevice) throws {
+		rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: try getVideoPreviewLayer())
 
-		updatePreviewRotation(rotationCoordinator.videoRotationAngleForHorizonLevelPreview)
+		try updatePreviewRotation(rotationCoordinator.videoRotationAngleForHorizonLevelPreview)
 		updateCaptureRotation(rotationCoordinator.videoRotationAngleForHorizonLevelCapture)
 
 		rotationObservers.removeAll()
@@ -164,7 +164,7 @@ actor CaptureService {
 		rotationObservers.append(
 			rotationCoordinator.observe(\.videoRotationAngleForHorizonLevelPreview, options: .new) { [weak self] _, change in
 				guard let self, let angle = change.newValue else { return }
-				Task { await self.updatePreviewRotation(angle) }
+				Task { try await self.updatePreviewRotation(angle) }
 			}
 		)
 
@@ -176,8 +176,8 @@ actor CaptureService {
 		)
 	}
 
-	private func updatePreviewRotation(_ angle: CGFloat) {
-		let previewLayer = videoPreviewLayer
+	private func updatePreviewRotation(_ angle: CGFloat) throws {
+		let previewLayer = try getVideoPreviewLayer()
 		Task { @MainActor in
 			previewLayer.connection?.videoRotationAngle = angle
 		}
@@ -187,22 +187,19 @@ actor CaptureService {
 		photoCapture.setCameraRotationAngle(angle)
 	}
 
-	private var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+	private func getVideoPreviewLayer() throws -> AVCaptureVideoPreviewLayer {
 		guard let previewLayer = captureSession.connections.compactMap({ $0.videoPreviewLayer }).first else {
-			fatalError("The app is misconfigured. The capture session should have a connection to a preview layer.")
+			logger.error("The app is misconfigured. The capture session should have a connection to a preview layer.")
+			throw CameraError.previewLayerNotFound
 		}
 		return previewLayer
 	}
 
 	// MARK: - Automatic focus and exposure
 
-	func focusAndExpose(at point: CGPoint) {
-		let devicePoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: point)
-		do {
-			try focusAndExpose(at: devicePoint, isUserInitiated: true)
-		} catch {
-			logger.debug("Unable to perform focus and exposure operation. \(error)")
-		}
+	func focusAndExpose(at point: CGPoint) throws {
+		let devicePoint = try getVideoPreviewLayer().captureDevicePointConverted(fromLayerPoint: point)
+		try focusAndExpose(at: devicePoint, isUserInitiated: true)
 	}
 
 	private var subjectAreaChangeTask: Task<Void, Never>?
