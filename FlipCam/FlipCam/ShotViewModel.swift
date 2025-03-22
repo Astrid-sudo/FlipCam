@@ -143,6 +143,9 @@ final class ShotViewModel: Camera {
 		self.guidePhotoOpacity = 0.5
 		saveGuidePhotoOpacity()
 
+		self.currentGuidePhotoEffect = .normal
+		saveGuidePhotoEffect()
+
 		Task {
 			await loadGuidePhoto()
 		}
