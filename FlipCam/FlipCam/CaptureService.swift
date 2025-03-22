@@ -135,6 +135,7 @@ actor CaptureService {
 			createRotationCoordinator(for: device)
 			observeSubjectAreaChanges(of: device)
 		} catch {
+			logger.error("Failed to change capture device: \(error), keep the current one.")
 			captureSession.addInput(currentInput)
 		}
 	}
