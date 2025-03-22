@@ -26,6 +26,12 @@ struct PreviewContainer<Content: View, CameraModel: Camera>: View {
 	var body: some View {
 		content
 			.blur(radius: blurRadius, opaque: true)
+			.overlay {
+				if camera.shouldFlashScreen {
+					Color.black
+						.ignoresSafeArea()
+				}
+			}
 			.onChange(of: camera.isSwitchingCameraDevices, updateBlurRadius(_:_:))
 	}
 

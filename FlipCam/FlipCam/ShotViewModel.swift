@@ -85,6 +85,7 @@ final class ShotViewModel: Camera {
 
 	func capturePhoto() async {
 		do {
+			flashScreen()
 			let photo = try await captureService.capturePhoto()
 			try await mediaLibrary.save(photo: photo)
 		} catch {
