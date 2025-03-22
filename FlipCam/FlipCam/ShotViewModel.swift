@@ -136,6 +136,10 @@ final class ShotViewModel: Camera {
 	func saveGuidePhotoIdentifier(_ identifier: String) {
 		self.guidePhotoIdentifier = identifier
 		UserDefaults.standard.set(identifier, forKey: "guidePhotoIdentifier")
+
+		self.shouldShowGuidePhoto = true
+		saveGuidePhotoVisibility()
+
 		Task {
 			await loadGuidePhoto()
 		}
