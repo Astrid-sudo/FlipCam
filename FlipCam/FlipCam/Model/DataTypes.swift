@@ -50,11 +50,34 @@ extension OutputService {
 	}
 }
 
-enum CameraError: Error {
+enum CameraError: LocalizedError {
 	case videoDeviceUnavailable
-	case audioDeviceUnavailable
 	case addInputFailed
 	case addOutputFailed
 	case setupFailed
 	case deviceChangeFailed
+	case unauthorized
+	case previewLayerNotFound
+	case noActiveInput
+
+	var errorDescription: String? {
+		switch self {
+		case .videoDeviceUnavailable:
+			return "No video device found for current input"
+		case .addInputFailed:
+			return "Failed to add camera input to capture session"
+		case .addOutputFailed:
+			return "Failed to add output to capture session"
+		case .setupFailed:
+			return "Failed to set up camera capture session"
+		case .deviceChangeFailed:
+			return "Failed to change camera device"
+		case .unauthorized:
+			return "Camera access is not authorized"
+		case .previewLayerNotFound:
+			return "Camera preview layer not found"
+		case .noActiveInput:
+			return "No active camera input found"
+		}
+	}
 }
