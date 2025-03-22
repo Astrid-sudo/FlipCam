@@ -140,6 +140,9 @@ final class ShotViewModel: Camera {
 		self.shouldShowGuidePhoto = true
 		saveGuidePhotoVisibility()
 
+		self.guidePhotoOpacity = 0.5
+		saveGuidePhotoOpacity()
+
 		Task {
 			await loadGuidePhoto()
 		}
