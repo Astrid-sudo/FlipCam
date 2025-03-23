@@ -59,6 +59,7 @@ enum CameraError: LocalizedError {
 	case unauthorized
 	case previewLayerNotFound
 	case noActiveInput
+	case mediaLibraryUnauthorized
 
 	var errorDescription: String? {
 		switch self {
@@ -78,6 +79,8 @@ enum CameraError: LocalizedError {
 			return "Camera preview layer not found"
 		case .noActiveInput:
 			return "No active camera input found"
+		case .mediaLibraryUnauthorized:
+			return "Photos access is not authorized, please go to Settings > Apps > FlipCam to turn on Photos access permission."
 		}
 	}
 
