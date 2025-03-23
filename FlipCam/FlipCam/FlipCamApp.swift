@@ -4,14 +4,21 @@
 //
 //  Created by Astrid Lin on 2025/3/6.
 //
-
+import os
 import SwiftUI
+import PhotosUI
+import Photos
+
 
 @main
 struct FlipCamApp: App {
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			ShotView()
         }
     }
+
+
 }
+let logger = Logger()
