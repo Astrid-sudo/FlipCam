@@ -73,7 +73,7 @@ enum CameraError: LocalizedError {
 		case .deviceChangeFailed:
 			return "Failed to change camera device"
 		case .unauthorized:
-			return "Camera access is not authorized"
+			return "Camera access is not authorized, please go to Settings > Apps > FlipCam to turn on Camera access permission."
 		case .previewLayerNotFound:
 			return "Camera preview layer not found"
 		case .noActiveInput:
