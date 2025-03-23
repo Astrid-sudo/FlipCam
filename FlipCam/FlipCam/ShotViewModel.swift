@@ -68,7 +68,7 @@ final class ShotViewModel: Camera {
 	func start() async {
 		guard await captureService.isAuthorized else {
 			cameraStatus = .unauthorized
-			handleError(CameraError.unauthorized)
+			handleError(CameraError.cameraUnauthorized)
 			return
 		}
 		do {
