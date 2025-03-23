@@ -16,7 +16,11 @@ struct ShotView: View {
 			PreviewContainer(camera: camera) {
 				CameraPreview(source: camera.previewSource, camera: camera)
 					.task {
+						#if targetEnvironment(simulator)
+						print("Running on simulator(just for screen shot) - camera initialization skipped")
+						#else
 						await camera.start()
+						#endif
 					}
 					.aspectRatio(3/4, contentMode: .fit)
 					.overlay(alignment: .center) {
