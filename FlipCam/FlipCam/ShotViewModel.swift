@@ -14,7 +14,7 @@ enum FlashMode {
 }
 
 @Observable
-final class ShotViewModel: Camera {
+final class ShotViewModel: Camera, CameraGuideOverlay {
 
 	/// Camera protocol
 	var previewSource: PreviewSource { captureService.previewSource }

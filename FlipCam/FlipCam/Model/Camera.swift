@@ -7,39 +7,47 @@
 
 import SwiftUI
 
+// Core camera functionality
 @MainActor
 protocol Camera: AnyObject {
 	var cameraStatus: CameraStatus { get }
 	var captureActivity: CaptureActivity { get }
 	var previewSource: PreviewSource { get }
-	func start() async
 	var prefersMinimizedUI: Bool { get }
-	func switchCameraDevices() async
 	var isSwitchingCameraDevices: Bool { get }
-	func focusAndExpose(at point: CGPoint) async
-	func capturePhoto() async
 	var shouldFlashScreen: Bool { get }
 	var thumbnail: CGImage? { get }
 	var error: Error? { set get }
 	var zoomFactor: CGFloat { get }
 	var maxZoomFactor: CGFloat { get }
+	var flashMode: FlashMode { get set }
+	var showErrorAlert: Bool { get set }
+	
+	func start() async
+	func switchCameraDevices() async
+	func focusAndExpose(at point: CGPoint) async
+	func capturePhoto() async
 	func setZoom(factor: CGFloat) async throws
 	func rampZoom(to factor: CGFloat) async throws
 	func setFlashMode(_ mode: FlashMode) async
-	func applyGuidePhoto(_ identifier: String)
+}
+
+// Guide and overlay features
+@MainActor
+protocol CameraGuideOverlay: AnyObject {
 	var guidePhotoOpacity: Double { get }
-	func setGuidePhotoOpacity(_ opacity: Double)
 	var currentGuidePhotoEffect: GuidePhotoEffect { get }
-	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
 	var isGuideGridEnabled: Bool { get set }
 	var shouldShowGuidePhoto: Bool { get set }
+	
+	func applyGuidePhoto(_ identifier: String)
+	func setGuidePhotoOpacity(_ opacity: Double)
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
 	func toggleGuidePhotoVisibility()
-	var flashMode: FlashMode { get set }
-	var showErrorAlert: Bool { get set }
 }
 
 @Observable
-class PreviewCameraModel: Camera {
+class PreviewCameraModel: Camera, CameraGuideOverlay {
 	var cameraStatus: CameraStatus { status }
 	var prefersMinimizedUI = false
 	var shouldFlashScreen = false
