@@ -44,16 +44,20 @@ actor MediaLibrary {
 	/// Saves a photo to the Photos library.
 	func save(photo: Photo) async throws {
 		let location = try await currentLocation
-		try await performChange {
-			let creationRequest = PHAssetCreationRequest.forAsset()
+		do {
+			try await performChange {
+				let creationRequest = PHAssetCreationRequest.forAsset()
 
-			// Save primary photo.
-			let options = PHAssetResourceCreationOptions()
-			// Specify the appropriate resource type for the photo.
-			creationRequest.addResource(with: photo.isProxy ? .photoProxy : .photo, data: photo.data, options: options)
-			creationRequest.location = location
+				// Save primary photo.
+				let options = PHAssetResourceCreationOptions()
+				// Specify the appropriate resource type for the photo.
+				creationRequest.addResource(with: photo.isProxy ? .photoProxy : .photo, data: photo.data, options: options)
+				creationRequest.location = location
 
-			return creationRequest.placeholderForCreatedAsset
+				return creationRequest.placeholderForCreatedAsset
+			}
+		} catch {
+			throw CameraError.mediaLibraryUnauthorized
 		}
 	}
 
