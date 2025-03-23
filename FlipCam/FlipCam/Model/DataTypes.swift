@@ -80,4 +80,13 @@ enum CameraError: LocalizedError {
 			return "No active camera input found"
 		}
 	}
+
+	var isFatalError: Bool {
+		switch self {
+		case .setupFailed, .unauthorized, .previewLayerNotFound:
+			return true
+		default:
+			return false
+		}
+	}
 }

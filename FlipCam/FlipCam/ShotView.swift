@@ -40,8 +40,14 @@ struct ShotView: View {
 			MainToolbar(camera: camera)
 		}
 		.alert("Error", isPresented: .constant(camera.showErrorAlert)) {
-			Button("OK") {
-				camera.showErrorAlert = false
+			if let error = camera.error as? CameraError, error.isFatalError {
+				Button("Exit FlipCam") {
+					fatalError(error.localizedDescription)
+				}
+			} else {
+				Button("OK") {
+					camera.showErrorAlert = false
+				}
 			}
 		} message: {
 			Text(camera.error?.localizedDescription ?? "Error occurred, please restart the app.")
