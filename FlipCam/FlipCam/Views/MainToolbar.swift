@@ -8,27 +8,27 @@
 import SwiftUI
 import PhotosUI
 
-struct MainToolbar<CameraModel: Camera>: PlatformView {
+struct MainToolbar: PlatformView {
 
 	@Environment(\.verticalSizeClass) var verticalSizeClass
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	@State var camera: CameraModel
+	@State var viewModel: ShotViewModel
 
 	var body: some View {
 		HStack {
 			HStack(spacing: 20) {
-				ThumbnailButton(camera: camera)
-				FlashlightButton(camera: camera)
+				ThumbnailButton(viewModel: viewModel)
+				FlashlightButton(camera: viewModel.cameraController)
 			}
 			Spacer()
-			CaptureButton(camera: camera)
+			CaptureButton(camera: viewModel.cameraController)
 			Spacer()
 			HStack(spacing: 20) {
 				Color.clear
 					.frame(width: 44, height: 44)
-				SwitchCameraButton(camera: camera)
+				SwitchCameraButton(camera: viewModel.cameraController)
 			}
 		}
 		.foregroundColor(Color.themeForeground(colorScheme: colorScheme))

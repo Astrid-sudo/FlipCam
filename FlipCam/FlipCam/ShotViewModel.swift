@@ -14,123 +14,59 @@ enum FlashMode {
 }
 
 @Observable
-final class ShotViewModel: Camera, CameraGuideOverlay {
-
-	/// Camera protocol
-	var previewSource: PreviewSource { captureService.previewSource }
-	private let mediaLibrary = MediaLibrary()
-	private let captureService = CaptureService()
-
-	private(set) var cameraStatus = CameraStatus.unknown
-	private(set) var captureActivity = CaptureActivity.idle
-	private(set) var isSwitchingCameraDevices = false
-	private(set) var prefersMinimizedUI = false
-	private(set) var shouldFlashScreen = false
-	private(set) var thumbnail: CGImage?
-	var error: Error?
-	var showErrorAlert = false
-	private(set) var zoomFactor: CGFloat = 1.0
-	private(set) var maxZoomFactor: CGFloat = 1.0
-
-	/// Guide Photo
+final class ShotViewModel: CameraGuideOverlay {
+	let cameraController = CameraController()
+	
+	// Forward camera properties
+	var previewSource: PreviewSource { cameraController.previewSource }
+	var cameraStatus: CameraStatus { cameraController.cameraStatus }
+	var captureActivity: CaptureActivity { cameraController.captureActivity }
+	var isSwitchingCameraDevices: Bool { cameraController.isSwitchingCameraDevices }
+	var prefersMinimizedUI: Bool { cameraController.prefersMinimizedUI }
+	var shouldFlashScreen: Bool { cameraController.shouldFlashScreen }
+	var thumbnail: CGImage? { cameraController.thumbnail }
+	var error: Error? {
+		get { cameraController.error }
+		set { cameraController.error = newValue }
+	}
+	var showErrorAlert: Bool {
+		get { cameraController.showErrorAlert }
+		set { cameraController.showErrorAlert = newValue }
+	}
+	var flashMode: FlashMode {
+		get { cameraController.flashMode }
+		set { Task { await cameraController.setFlashMode(newValue) } }
+	}
+	
+	// Guide Photo properties
 	private var guidePhoto: UIImage?
 	private(set) var guidePhotoIdentifier: String?
-	private(set) var guidePhotoOpacity: Double = 0.5 // Default opacity value
-
+	private(set) var guidePhotoOpacity: Double = 0.5
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	private(set) var processedGuidePhoto: UIImage?
 	var shouldShowGuidePhoto: Bool = true
-
-	/// Guide Grid
 	var isGuideGridEnabled: Bool = false
-
-	var flashMode: FlashMode = .off
-
+	
 	init() {
-		/// Guide Photo
 		loadSavedGuidePhotoIdentifier()
 		loadSavedGuidePhotoOpacity()
 		loadSavedGuidePhotoEffect()
 		loadSavedGuidePhotoVisibility()
-		
-		/// Guide Grid
 		loadSavedGuideGridSetting()
 	}
-
-	// MARK: - Error Handling
-	private func handleError(_ error: Error) {
-		self.error = error
-		self.showErrorAlert = true
-	}
-
-	// MARK: - Starting the camera
-
-	func start() async {
-		guard await captureService.isAuthorized else {
-			cameraStatus = .unauthorized
-			handleError(CameraError.cameraUnauthorized)
-			return
-		}
-		do {
-			try await captureService.start()
-			observeState()
-			cameraStatus = .running
-		} catch {
-			logger.error("Failed to start capture service. \(error)")
-			cameraStatus = .failed
-			handleError(error)
-		}
-	}
-
-	// MARK: - Device selection
-
+		
 	func switchCameraDevices() async {
-		isSwitchingCameraDevices = true
-		defer { isSwitchingCameraDevices = false }
-		do {
-			try await captureService.selectNextCameraDevice()
-		} catch {
-			handleError(error)
-		}
+		await cameraController.switchCameraDevices()
 	}
-
-	// MARK: - Photo capture
-
+	
 	func capturePhoto() async {
-		do {
-			flashScreen()
-			let photo = try await captureService.capturePhoto()
-			try await mediaLibrary.save(photo: photo)
-		} catch {
-			handleError(error)
-		}
+		await cameraController.capturePhoto()
 	}
-
+	
 	func focusAndExpose(at point: CGPoint) async {
-		do {
-			try await captureService.focusAndExpose(at: point)
-		} catch {
-			handleError(error)
-		}
+		await cameraController.focusAndExpose(at: point)
 	}
-
-	func setZoom(factor: CGFloat) async throws {
-		try await captureService.setZoom(factor: factor)
-		zoomFactor = factor
-	}
-
-	func rampZoom(to factor: CGFloat) async throws {
-		try await captureService.rampZoom(to: factor)
-		zoomFactor = factor
-	}
-
-	private func flashScreen() {
-		shouldFlashScreen = true
-		withAnimation(.linear(duration: 0.01)) {
-			shouldFlashScreen = false
-		}
-	}
-
+	
 	// MARK: - Guide Photo Management
 
 	func applyGuidePhoto(_ identifier: String) {
@@ -150,7 +86,7 @@ final class ShotViewModel: Camera, CameraGuideOverlay {
 		}
 
 		do {
-			self.guidePhoto = try await mediaLibrary.loadPhoto(withIdentifier: identifier)
+			self.guidePhoto = try await cameraController.loadPhoto(withIdentifier: identifier)
 			processGuidePhoto()
 		} catch {
 			logger.error("Failed to load guide photo: \(error)")
@@ -163,7 +99,6 @@ final class ShotViewModel: Camera, CameraGuideOverlay {
 		self.guidePhotoIdentifier = identifier
 		UserDefaults.standard.set(identifier, forKey: "guidePhotoIdentifier")
 	}
-
 
 	private func loadSavedGuidePhotoIdentifier() {
 		if let savedIdentifier = UserDefaults.standard.string(forKey: "guidePhotoIdentifier") {
@@ -386,38 +321,5 @@ final class ShotViewModel: Camera, CameraGuideOverlay {
 
 	private func loadSavedGuideGridSetting() {
 		isGuideGridEnabled = UserDefaults.standard.bool(forKey: "isGuideGridEnabled")
-	}
-
-	// MARK: - Internal state observations
-
-	private func observeState() {
-		Task {
-			for await thumbnail in mediaLibrary.thumbnails.compactMap({ $0 }) {
-				self.thumbnail = thumbnail
-			}
-		}
-
-		Task {
-			for await activity in await captureService.$captureActivity.values {
-				if activity.willCapture {
-					flashScreen()
-				} else {
-					captureActivity = activity
-				}
-			}
-		}
-
-		Task {
-			for await isShowingFullscreenControls in await captureService.$isShowingFullscreenControls.values {
-				withAnimation {
-					prefersMinimizedUI = isShowingFullscreenControls
-				}
-			}
-		}
-	}
-
-	func setFlashMode(_ mode: FlashMode) async {
-		flashMode = mode
-		await captureService.setFlashMode(mode)
 	}
 }

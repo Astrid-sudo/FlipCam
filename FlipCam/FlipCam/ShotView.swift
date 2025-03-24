@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct ShotView: View {
-	@State private var camera = ShotViewModel()
+	@State private var viewModel = ShotViewModel()
 	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
 		VStack {
-			PreviewContainer(camera: camera) {
-				CameraPreview(source: camera.previewSource, camera: camera)
+			PreviewContainer(camera: viewModel.cameraController) {
+				CameraPreview(source: viewModel.previewSource, camera: viewModel.cameraController)
 					.task {
-						await camera.start()
+						await viewModel.cameraController.start()
 					}
 					.aspectRatio(3/4, contentMode: .fit)
 					.overlay(alignment: .center) {
 						GeometryReader { geometry in
-							if camera.shouldShowGuidePhoto {
+							if viewModel.shouldShowGuidePhoto {
 								guidePhoto(width: geometry.size.width, height: geometry.size.height)
 							}
 						}
@@ -29,40 +29,40 @@ struct ShotView: View {
 			}
 			.overlay(alignment: .center) {
 				GeometryReader { geometry in
-					if camera.isGuideGridEnabled {
+					if viewModel.isGuideGridEnabled {
 						gridLines
 							.frame(width: geometry.size.width, height: geometry.size.height)
 					}
 				}
 			}
-			GuideControl(camera: camera)
-			OpacityControl(camera: camera)
-			MainToolbar(camera: camera)
+			GuideControl(viewModel: viewModel)
+			OpacityControl(viewModel: viewModel)
+			MainToolbar(viewModel: viewModel)
 		}
-		.alert("Error", isPresented: .constant(camera.showErrorAlert)) {
-			if let error = camera.error as? CameraError, error.isFatalError {
+		.alert("Error", isPresented: .constant(viewModel.showErrorAlert)) {
+			if let error = viewModel.error as? CameraError, error.isFatalError {
 				Button("Exit FlipCam") {
 					fatalError(error.localizedDescription)
 				}
 			} else {
 				Button("OK") {
-					camera.showErrorAlert = false
+					viewModel.showErrorAlert = false
 				}
 			}
 		} message: {
-			Text(camera.error?.localizedDescription ?? "Error occurred, please restart the app.")
+			Text(viewModel.error?.localizedDescription ?? "Error occurred, please restart the app.")
 		}
 	}
 
 	@ViewBuilder
 	private func guidePhoto(width: CGFloat, height: CGFloat) -> some View {
-		if let processedGuidePhoto = camera.processedGuidePhoto {
+		if let processedGuidePhoto = viewModel.processedGuidePhoto {
 			Image(uiImage: processedGuidePhoto)
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.frame(width: width, height: height)
 				.clipped()
-				.opacity(camera.guidePhotoOpacity)
+				.opacity(viewModel.guidePhotoOpacity)
 		}
 	}
 
