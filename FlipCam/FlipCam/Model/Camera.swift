@@ -17,16 +17,14 @@ protocol Camera: AnyObject {
 	var isSwitchingCameraDevices: Bool { get }
 	var shouldFlashScreen: Bool { get }
 	var thumbnail: CGImage? { get }
-	var error: Error? { set get }
 	var zoomFactor: CGFloat { get }
 	var maxZoomFactor: CGFloat { get }
 	var flashMode: FlashMode { get set }
-	var showErrorAlert: Bool { get set }
-	
-	func start() async
-	func switchCameraDevices() async
-	func focusAndExpose(at point: CGPoint) async
-	func capturePhoto() async
+
+	func start() async throws
+	func switchCameraDevices() async throws
+	func focusAndExpose(at point: CGPoint) async throws
+	func capturePhoto() async throws
 	func setZoom(factor: CGFloat) async throws
 	func rampZoom(to factor: CGFloat) async throws
 	func setFlashMode(_ mode: FlashMode) async
@@ -62,7 +60,6 @@ class PreviewCameraModel: Camera, CameraGuideOverlay {
 	private(set) var isVideoDeviceSwitchable = true
 	private(set) var isSwitchingCameraDevices = false
 	private(set) var thumbnail: CGImage?
-	var error: Error?
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
 	var guidePhotoOpacity: Double = 0.5
@@ -70,33 +67,28 @@ class PreviewCameraModel: Camera, CameraGuideOverlay {
 	var isGuideGridEnabled: Bool = false
 	var shouldShowGuidePhoto: Bool = true
 	var flashMode: FlashMode = .off
-	var showErrorAlert: Bool = false
 
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
 	}
 
-	func start() async {
+	func start() async throws {
 		if status == .unknown {
 			status = .running
 		}
 	}
 
-	func switchCameraDevices() async {
+	func switchCameraDevices() async throws {
 		logger.debug("Device switching isn't implemented in PreviewCamera.")
 	}
 
-	func capturePhoto() async {
+	func capturePhoto() async throws {
 		logger.debug("Photo capture isn't implemented in PreviewCamera.")
 	}
 
-	func focusAndExpose(at point: CGPoint) async {
+	func focusAndExpose(at point: CGPoint) async throws {
 		logger.debug("Focus and expose isn't implemented in PreviewCamera.")
-	}
-
-	func syncState() async {
-		logger.debug("Syncing state isn't implemented in PreviewCamera.")
 	}
 
 	func setZoom(factor: CGFloat) async throws {

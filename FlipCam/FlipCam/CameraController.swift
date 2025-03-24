@@ -12,21 +12,18 @@ final class CameraController: Camera {
     private(set) var prefersMinimizedUI = false
     private(set) var shouldFlashScreen = false
     private(set) var thumbnail: CGImage?
-    var error: Error?
-    var showErrorAlert = false
     private(set) var zoomFactor: CGFloat = 1.0
     private(set) var maxZoomFactor: CGFloat = 1.0
     var flashMode: FlashMode = .off
-    
+
     init() {
         observeThumbnails()
     }
     
-    func start() async {
+    func start() async throws {
         guard await captureService.isAuthorized else {
             cameraStatus = .unauthorized
-            handleError(CameraError.cameraUnauthorized)
-            return
+            throw CameraError.cameraUnauthorized
         }
         do {
             try await captureService.start()
@@ -35,36 +32,24 @@ final class CameraController: Camera {
         } catch {
             logger.error("Failed to start capture service. \(error)")
             cameraStatus = .failed
-            handleError(error)
+            throw error
         }
     }
     
-    func switchCameraDevices() async {
+    func switchCameraDevices() async throws {
         isSwitchingCameraDevices = true
         defer { isSwitchingCameraDevices = false }
-        do {
-            try await captureService.selectNextCameraDevice()
-        } catch {
-            handleError(error)
-        }
+        try await captureService.selectNextCameraDevice()
     }
     
-    func capturePhoto() async {
-        do {
-            flashScreen()
-            let photo = try await captureService.capturePhoto()
-            try await mediaLibrary.save(photo: photo)
-        } catch {
-            handleError(error)
-        }
+    func capturePhoto() async throws {
+        flashScreen()
+        let photo = try await captureService.capturePhoto()
+        try await mediaLibrary.save(photo: photo)
     }
     
-    func focusAndExpose(at point: CGPoint) async {
-        do {
-            try await captureService.focusAndExpose(at: point)
-        } catch {
-            handleError(error)
-        }
+    func focusAndExpose(at point: CGPoint) async throws {
+        try await captureService.focusAndExpose(at: point)
     }
     
     func setZoom(factor: CGFloat) async throws {
@@ -87,11 +72,6 @@ final class CameraController: Camera {
         withAnimation(.linear(duration: 0.01)) {
             shouldFlashScreen = false
         }
-    }
-    
-    private func handleError(_ error: Error) {
-        self.error = error
-        self.showErrorAlert = true
     }
     
     private func observeState() {

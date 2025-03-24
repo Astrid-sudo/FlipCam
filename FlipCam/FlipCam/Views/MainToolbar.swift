@@ -23,12 +23,12 @@ struct MainToolbar: PlatformView {
 				FlashlightButton(camera: viewModel.cameraController)
 			}
 			Spacer()
-			CaptureButton(camera: viewModel.cameraController)
+			CaptureButton(viewModel: viewModel)
 			Spacer()
 			HStack(spacing: 20) {
 				Color.clear
 					.frame(width: 44, height: 44)
-				SwitchCameraButton(camera: viewModel.cameraController)
+				SwitchCameraButton(viewModel: viewModel)
 			}
 		}
 		.foregroundColor(Color.themeForeground(colorScheme: colorScheme))

@@ -16,7 +16,7 @@ struct ShotView: View {
 			PreviewContainer(camera: viewModel.cameraController) {
 				CameraPreview(source: viewModel.previewSource, camera: viewModel.cameraController)
 					.task {
-						await viewModel.cameraController.start()
+						await viewModel.startCamera()
 					}
 					.aspectRatio(3/4, contentMode: .fit)
 					.overlay(alignment: .center) {

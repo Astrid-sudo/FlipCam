@@ -25,14 +25,8 @@ final class ShotViewModel: CameraGuideOverlay {
 	var prefersMinimizedUI: Bool { cameraController.prefersMinimizedUI }
 	var shouldFlashScreen: Bool { cameraController.shouldFlashScreen }
 	var thumbnail: CGImage? { cameraController.thumbnail }
-	var error: Error? {
-		get { cameraController.error }
-		set { cameraController.error = newValue }
-	}
-	var showErrorAlert: Bool {
-		get { cameraController.showErrorAlert }
-		set { cameraController.showErrorAlert = newValue }
-	}
+	var error: Error?
+	var showErrorAlert: Bool = false
 	var flashMode: FlashMode {
 		get { cameraController.flashMode }
 		set { Task { await cameraController.setFlashMode(newValue) } }
@@ -54,17 +48,42 @@ final class ShotViewModel: CameraGuideOverlay {
 		loadSavedGuidePhotoVisibility()
 		loadSavedGuideGridSetting()
 	}
-		
+
+	func startCamera() async {
+		do {
+			try await cameraController.start()
+		} catch {
+			handleError(error)
+		}
+	}
+
 	func switchCameraDevices() async {
-		await cameraController.switchCameraDevices()
+		do {
+			try await cameraController.switchCameraDevices()
+		} catch {
+			handleError(error)
+		}
 	}
 	
 	func capturePhoto() async {
-		await cameraController.capturePhoto()
+		do {
+			try await cameraController.capturePhoto()
+		} catch {
+			handleError(error)
+		}
 	}
 	
 	func focusAndExpose(at point: CGPoint) async {
-		await cameraController.focusAndExpose(at: point)
+		do {
+			try await cameraController.focusAndExpose(at: point)
+		} catch {
+			handleError(error)
+		}
+	}
+	
+	private func handleError(_ error: Error) {
+		self.error = error
+		self.showErrorAlert = true
 	}
 	
 	// MARK: - Guide Photo Management

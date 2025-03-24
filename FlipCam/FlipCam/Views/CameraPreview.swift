@@ -109,8 +109,7 @@ class Coordinator: NSObject {
 				do {
 					try await parent.camera.setZoom(factor: newZoom)
 				} catch {
-					parent.camera.error = error
-					parent.camera.showErrorAlert = true
+					logger.error("Failed to setZoom.")
 				}
 			}
 		case .ended:
@@ -119,8 +118,7 @@ class Coordinator: NSObject {
 				do {
 					try await parent.camera.rampZoom(to: finalZoom)
 				} catch {
-					parent.camera.error = error
-					parent.camera.showErrorAlert = true
+					logger.error("Failed to rampZoom.")
 				}
 			}
 		default:
