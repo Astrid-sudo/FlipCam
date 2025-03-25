@@ -156,149 +156,19 @@ final class ShotViewModel: CameraGuideOverlay {
 
 	// MARK: - Guide Photo Effects
 
-	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
-		currentGuidePhotoEffect = effect
-		saveGuidePhotoEffect()
-		processGuidePhoto()
-	}
-
 	private func processGuidePhoto() {
 		guard let guidePhoto = guidePhoto else {
 			processedGuidePhoto = nil
 			logger.info("There is no guide photo selected.")
 			return
 		}
-		
-		switch currentGuidePhotoEffect {
-		case .normal:
-			processedGuidePhoto = guidePhoto
-			
-		case .contrast:
-			if let ciImage = CIImage(image: guidePhoto) {
-				let context = CIContext(options: nil)
-				
-				let parameters = [
-					kCIInputImageKey: ciImage,
-					kCIInputContrastKey: NSNumber(value: 10.0),
-					kCIInputBrightnessKey: NSNumber(value: 0.2)
-				] as [String : Any]
-				
-				if let filter = CIFilter(name: "CIColorControls", parameters: parameters),
-				   let outputImage = filter.outputImage,
-				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
-					processedGuidePhoto = UIImage(cgImage: cgImg)
-				} else {
-					processedGuidePhoto = guidePhoto
-				}
-			} else {
-				processedGuidePhoto = guidePhoto
-			}
-			
-		case .inverse:
-			if let ciImage = CIImage(image: guidePhoto) {
-				let context = CIContext(options: nil)
-				
-				// First invert the colors
-				guard let invertFilter = CIFilter(name: "CIColorInvert") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIColorInvert.")
-					return
-				}
-				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
-				
-				guard let invertedImage = invertFilter.outputImage else {
-					processedGuidePhoto = guidePhoto
-					return
-				}
-				
-				// Then apply high contrast
-				guard let contrastFilter = CIFilter(name: "CIColorControls") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIColorControls.")
-					return
-				}
-				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
-				contrastFilter.setValue(NSNumber(value: 10), forKey: kCIInputContrastKey)
-				contrastFilter.setValue(NSNumber(value: -2), forKey: kCIInputBrightnessKey)
-				contrastFilter.setValue(NSNumber(value: 1.2), forKey: kCIInputSaturationKey)
-				
-				if let outputImage = contrastFilter.outputImage,
-				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
-					processedGuidePhoto = UIImage(cgImage: cgImg)
-				} else {
-					processedGuidePhoto = guidePhoto
-				}
-			} else {
-				processedGuidePhoto = guidePhoto
-			}
-			
-		case .outline:
-			if let ciImage = CIImage(image: guidePhoto) {
-				let context = CIContext(options: nil)
-				
-				// First invert the colors
-				guard let invertFilter = CIFilter(name: "CIColorInvert") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIColorInvert.")
-					return
-				}
-				invertFilter.setValue(ciImage, forKey: kCIInputImageKey)
-				
-				guard let invertedImage = invertFilter.outputImage else {
-					processedGuidePhoto = guidePhoto
-					return
-				}
-				
-				// Increase contrast of inverted image
-				guard let contrastFilter = CIFilter(name: "CIColorControls") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIColorControls.")
-					return
-				}
-				contrastFilter.setValue(invertedImage, forKey: kCIInputImageKey)
-				contrastFilter.setValue(NSNumber(value: 3.0), forKey: kCIInputContrastKey)
-				contrastFilter.setValue(NSNumber(value: 0.0), forKey: kCIInputBrightnessKey)
-				
-				guard let contrastedImage = contrastFilter.outputImage else {
-					processedGuidePhoto = guidePhoto
-					return
-				}
-				
-				// Apply edge detection
-				guard let edgeFilter = CIFilter(name: "CIEdges") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIEdges.")
-					return
-				}
-				edgeFilter.setValue(contrastedImage, forKey: kCIInputImageKey)
-				edgeFilter.setValue(NSNumber(value: 6.0), forKey: kCIInputIntensityKey)
-				
-				guard let edgeOutput = edgeFilter.outputImage else {
-					processedGuidePhoto = guidePhoto
-					return
-				}
-				
-				// Make it brighter and increase contrast
-				guard let brightnessFilter = CIFilter(name: "CIColorControls") else {
-					processedGuidePhoto = guidePhoto
-					logger.error("There is no CIFilter named CIColorControls.")
-					return
-				}
-				brightnessFilter.setValue(edgeOutput, forKey: kCIInputImageKey)
-				brightnessFilter.setValue(NSNumber(value: 8.0), forKey: kCIInputContrastKey)
-				brightnessFilter.setValue(NSNumber(value: 0.3), forKey: kCIInputBrightnessKey) // Make it brighter
-				brightnessFilter.setValue(NSNumber(value: 0.0), forKey: kCIInputSaturationKey)
-				
-				if let outputImage = brightnessFilter.outputImage,
-				   let cgImg = context.createCGImage(outputImage, from: outputImage.extent) {
-					processedGuidePhoto = UIImage(cgImage: cgImg)
-				} else {
-					processedGuidePhoto = guidePhoto
-				}
-			} else {
-				processedGuidePhoto = guidePhoto
-			}
-		}
+		processedGuidePhoto = PhotoEffectProcessor.processPhoto(guidePhoto, with: currentGuidePhotoEffect)
+	}
+
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
+		currentGuidePhotoEffect = effect
+		saveGuidePhotoEffect()
+		processGuidePhoto()
 	}
 
 	private func saveGuidePhotoEffect() {

@@ -84,12 +84,3 @@ struct EffectButton: View {
 	}
 }
 
-/// Guide Photo Effects
-enum GuidePhotoEffect: String, CaseIterable, Identifiable {
-	case normal = "Normal"
-	case contrast = "Contrast"
-	case inverse = "Inverse"
-	case outline = "Outline"
-
-	var id: String { rawValue }
-}
