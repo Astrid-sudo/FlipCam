@@ -58,7 +58,7 @@ struct GuideControl: PlatformView {
 	@ViewBuilder
 	private var gridButton: some View {
 		Button {
-			viewModel.shouldShowGuideGrid.toggle()
+			viewModel.toggleGuideGrid()
 		} label: {
 			Image(systemName: "grid")
 				.foregroundColor(viewModel.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
