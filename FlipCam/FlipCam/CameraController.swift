@@ -14,7 +14,7 @@ final class CameraController: Camera {
     private(set) var thumbnail: CGImage?
     private(set) var zoomFactor: CGFloat = 1.0
     private(set) var maxZoomFactor: CGFloat = 1.0
-    var flashMode: FlashMode = .off
+	private(set) var flashMode: FlashMode = .off
 
     init() {
         observeThumbnails()

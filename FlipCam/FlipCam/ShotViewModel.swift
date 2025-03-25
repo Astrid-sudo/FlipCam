@@ -27,10 +27,6 @@ final class ShotViewModel: CameraGuideOverlay {
 	var thumbnail: CGImage? { cameraController.thumbnail }
 	var error: Error?
 	var showErrorAlert: Bool = false
-	var flashMode: FlashMode {
-		get { cameraController.flashMode }
-		set { Task { await cameraController.setFlashMode(newValue) } }
-	}
 	
 	// Guide Photo properties
 	private var guidePhoto: UIImage?

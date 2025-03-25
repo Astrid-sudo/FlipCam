@@ -19,7 +19,7 @@ protocol Camera: AnyObject {
 	var thumbnail: CGImage? { get }
 	var zoomFactor: CGFloat { get }
 	var maxZoomFactor: CGFloat { get }
-	var flashMode: FlashMode { get set }
+	var flashMode: FlashMode { get }
 
 	func start() async throws
 	func switchCameraDevices() async throws
