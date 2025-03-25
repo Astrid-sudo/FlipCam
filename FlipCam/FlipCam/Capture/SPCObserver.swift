@@ -9,7 +9,7 @@ import AVFoundation
 
 class SystemPreferredCameraObserver: NSObject {
 
-	private let systemPreferredKeyPath = "systemPreferredCamera"
+	private let systemPreferredKeyPath = OtherConstants.systemPreferredCameraKeyPath
 
 	let changes: AsyncStream<AVCaptureDevice?>
 	private var continuation: AsyncStream<AVCaptureDevice?>.Continuation?

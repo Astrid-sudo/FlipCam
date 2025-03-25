@@ -112,11 +112,11 @@ final class ShotViewModel: CameraGuideOverlay {
 
 	private func saveGuidePhotoIdentifier(_ identifier: String) {
 		self.guidePhotoIdentifier = identifier
-		UserDefaults.standard.set(identifier, forKey: "guidePhotoIdentifier")
+		UserDefaults.standard.set(identifier, forKey: UserDefaultsKeys.guidePhotoIdentifier)
 	}
 
 	private func loadSavedGuidePhotoIdentifier() {
-		if let savedIdentifier = UserDefaults.standard.string(forKey: "guidePhotoIdentifier") {
+		if let savedIdentifier = UserDefaults.standard.string(forKey: UserDefaultsKeys.guidePhotoIdentifier) {
 			self.guidePhotoIdentifier = savedIdentifier
 			Task {
 				await loadGuidePhoto()
@@ -130,11 +130,11 @@ final class ShotViewModel: CameraGuideOverlay {
 	}
 
 	private func saveGuidePhotoOpacity() {
-		UserDefaults.standard.set(guidePhotoOpacity, forKey: "guidePhotoOpacity")
+		UserDefaults.standard.set(guidePhotoOpacity, forKey: UserDefaultsKeys.guidePhotoOpacity)
 	}
 
 	private func loadSavedGuidePhotoOpacity() {
-		if let savedOpacity = UserDefaults.standard.object(forKey: "guidePhotoOpacity") as? Double {
+		if let savedOpacity = UserDefaults.standard.object(forKey: UserDefaultsKeys.guidePhotoOpacity) as? Double {
 			self.guidePhotoOpacity = savedOpacity
 		}
 	}
@@ -168,11 +168,11 @@ final class ShotViewModel: CameraGuideOverlay {
 	}
 
 	private func saveGuidePhotoEffect() {
-		UserDefaults.standard.set(currentGuidePhotoEffect.rawValue, forKey: "guidePhotoEffect")
+		UserDefaults.standard.set(currentGuidePhotoEffect.rawValue, forKey: UserDefaultsKeys.guidePhotoEffect)
 	}
 
 	private func loadSavedGuidePhotoEffect() {
-		if let savedEffect = UserDefaults.standard.string(forKey: "guidePhotoEffect"),
+		if let savedEffect = UserDefaults.standard.string(forKey: UserDefaultsKeys.guidePhotoEffect),
 		   let effect = GuidePhotoEffect(rawValue: savedEffect) {
 			self.currentGuidePhotoEffect = effect
 		}
@@ -186,11 +186,11 @@ final class ShotViewModel: CameraGuideOverlay {
 	}
 
 	private func saveGuidePhotoVisibility() {
-		UserDefaults.standard.set(shouldShowGuidePhoto, forKey: "shouldShowGuidePhoto")
+		UserDefaults.standard.set(shouldShowGuidePhoto, forKey: UserDefaultsKeys.shouldShowGuidePhoto)
 	}
 
 	private func loadSavedGuidePhotoVisibility() {
-		shouldShowGuidePhoto = UserDefaults.standard.bool(forKey: "shouldShowGuidePhoto")
+		shouldShowGuidePhoto = UserDefaults.standard.bool(forKey: UserDefaultsKeys.shouldShowGuidePhoto)
 	}
 
 	// MARK: - Guide Grid Management
@@ -201,10 +201,10 @@ final class ShotViewModel: CameraGuideOverlay {
 	}
 
 	private func saveGuideGridSetting() {
-		UserDefaults.standard.set(shouldShowGuideGrid, forKey: "shouldShowGuideGrid")
+		UserDefaults.standard.set(shouldShowGuideGrid, forKey: UserDefaultsKeys.shouldShowGuideGrid)
 	}
 
 	private func loadSavedGuideGridSetting() {
-		shouldShowGuideGrid = UserDefaults.standard.bool(forKey: "shouldShowGuideGrid")
+		shouldShowGuideGrid = UserDefaults.standard.bool(forKey: UserDefaultsKeys.shouldShowGuideGrid)
 	}
 }

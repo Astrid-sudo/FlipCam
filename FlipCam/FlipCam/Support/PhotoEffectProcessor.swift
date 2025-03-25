@@ -48,7 +48,7 @@ struct PhotoEffectProcessor {
             kCIInputBrightnessKey: NSNumber(value: 0.2)
         ] as [String : Any]
         
-        guard let filter = CIFilter(name: "CIColorControls", parameters: parameters),
+        guard let filter = CIFilter(name: FilterNames.colorControls, parameters: parameters),
               let outputImage = filter.outputImage,
               let cgImg = context.createCGImage(outputImage, from: outputImage.extent) else {
             logger.error("Failed to apply contrast effect")
@@ -62,7 +62,7 @@ struct PhotoEffectProcessor {
         let context = CIContext(options: nil)
         
         // First invert the colors
-        guard let invertFilter = CIFilter(name: "CIColorInvert") else {
+        guard let invertFilter = CIFilter(name: FilterNames.colorInvert) else {
             logger.error("Failed to create CIColorInvert filter")
             return nil
         }
@@ -74,7 +74,7 @@ struct PhotoEffectProcessor {
         }
         
         // Then apply high contrast
-        guard let contrastFilter = CIFilter(name: "CIColorControls") else {
+        guard let contrastFilter = CIFilter(name: FilterNames.colorControls) else {
             logger.error("Failed to create CIColorControls filter")
             return nil
         }
@@ -96,7 +96,7 @@ struct PhotoEffectProcessor {
         let context = CIContext(options: nil)
         
         // First invert the colors
-        guard let invertFilter = CIFilter(name: "CIColorInvert") else {
+        guard let invertFilter = CIFilter(name: FilterNames.colorInvert) else {
             logger.error("Failed to create CIColorInvert filter")
             return nil
         }
@@ -108,7 +108,7 @@ struct PhotoEffectProcessor {
         }
         
         // Increase contrast of inverted image
-        guard let contrastFilter = CIFilter(name: "CIColorControls") else {
+        guard let contrastFilter = CIFilter(name: FilterNames.colorControls) else {
             logger.error("Failed to create CIColorControls filter")
             return nil
         }
@@ -122,7 +122,7 @@ struct PhotoEffectProcessor {
         }
         
         // Apply edge detection
-        guard let edgeFilter = CIFilter(name: "CIEdges") else {
+        guard let edgeFilter = CIFilter(name: FilterNames.edges) else {
             logger.error("Failed to create CIEdges filter")
             return nil
         }
@@ -135,7 +135,7 @@ struct PhotoEffectProcessor {
         }
         
         // Make it brighter and increase contrast
-        guard let brightnessFilter = CIFilter(name: "CIColorControls") else {
+        guard let brightnessFilter = CIFilter(name: FilterNames.colorControls) else {
             logger.error("Failed to create final CIColorControls filter")
             return nil
         }

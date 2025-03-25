@@ -27,7 +27,7 @@ struct GuideControl: PlatformView {
 	@ViewBuilder
 	private var effectButtonsRow: some View {
 		HStack(spacing: horizontalSizeClass == .regular ? 20 : 10) {
-			EffectButton(systemName: "photo", 
+			EffectButton(systemName: SystemImageNames.photo, 
 						effect: .normal, 
 						selectedEffect: Binding(
 							get: { viewModel.currentGuidePhotoEffect },
@@ -60,7 +60,7 @@ struct GuideControl: PlatformView {
 		Button {
 			viewModel.toggleGuideGrid()
 		} label: {
-			Image(systemName: "grid")
+			Image(systemName: SystemImageNames.grid)
 				.foregroundColor(viewModel.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 		}
 	}

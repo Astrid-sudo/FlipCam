@@ -39,18 +39,18 @@ struct ShotView: View {
 			OpacityControl(viewModel: viewModel)
 			MainToolbar(viewModel: viewModel)
 		}
-		.alert("Error", isPresented: .constant(viewModel.showErrorAlert)) {
+		.alert(ErrorMessages.error, isPresented: .constant(viewModel.showErrorAlert)) {
 			if let error = viewModel.error as? CameraError, error.isFatalError {
-				Button("Exit FlipCam") {
+				Button(ErrorMessages.exitFlipCam) {
 					fatalError(error.localizedDescription)
 				}
 			} else {
-				Button("OK") {
+				Button(ErrorMessages.ok) {
 					viewModel.showErrorAlert = false
 				}
 			}
 		} message: {
-			Text(viewModel.error?.localizedDescription ?? "Error occurred, please restart the app.")
+			Text(viewModel.error?.localizedDescription ?? ErrorMessages.restart)
 		}
 	}
 

@@ -17,7 +17,7 @@ struct SwitchCameraButton: View {
 				await viewModel.switchCameraDevices()
 			}
 		} label: {
-			Image(systemName: "arrow.triangle.2.circlepath")
+			Image(systemName: SystemImageNames.cameraSwitch)
 				.adaptiveSpacing()
 				.adaptiveButtonSize()
 		}
