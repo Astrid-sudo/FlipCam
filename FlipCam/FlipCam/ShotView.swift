@@ -29,7 +29,7 @@ struct ShotView: View {
 			}
 			.overlay(alignment: .center) {
 				GeometryReader { geometry in
-					if viewModel.isGuideGridEnabled {
+					if viewModel.shouldShowGuideGrid {
 						gridLines
 							.frame(width: geometry.size.width, height: geometry.size.height)
 					}

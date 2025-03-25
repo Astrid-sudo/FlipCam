@@ -39,7 +39,7 @@ final class ShotViewModel: CameraGuideOverlay {
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	private(set) var processedGuidePhoto: UIImage?
 	var shouldShowGuidePhoto: Bool = true
-	var isGuideGridEnabled: Bool = false
+	var shouldShowGuideGrid: Bool = false
 	
 	init() {
 		loadSavedGuidePhotoIdentifier()
@@ -200,15 +200,15 @@ final class ShotViewModel: CameraGuideOverlay {
 	// MARK: - Guide Grid Management
 
 	func toggleGuideGrid() {
-		isGuideGridEnabled.toggle()
+		shouldShowGuideGrid.toggle()
 		saveGuideGridSetting()
 	}
 
 	private func saveGuideGridSetting() {
-		UserDefaults.standard.set(isGuideGridEnabled, forKey: "isGuideGridEnabled")
+		UserDefaults.standard.set(shouldShowGuideGrid, forKey: "shouldShowGuideGrid")
 	}
 
 	private func loadSavedGuideGridSetting() {
-		isGuideGridEnabled = UserDefaults.standard.bool(forKey: "isGuideGridEnabled")
+		shouldShowGuideGrid = UserDefaults.standard.bool(forKey: "shouldShowGuideGrid")
 	}
 }

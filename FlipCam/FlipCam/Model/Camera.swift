@@ -35,7 +35,7 @@ protocol Camera: AnyObject {
 protocol CameraGuideOverlay: AnyObject {
 	var guidePhotoOpacity: Double { get }
 	var currentGuidePhotoEffect: GuidePhotoEffect { get }
-	var isGuideGridEnabled: Bool { get set }
+	var shouldShowGuideGrid: Bool { get set }
 	var shouldShowGuidePhoto: Bool { get set }
 	
 	func applyGuidePhoto(_ identifier: String)
@@ -64,7 +64,7 @@ class PreviewCameraModel: Camera, CameraGuideOverlay {
 	var maxZoomFactor: CGFloat = 4.0
 	var guidePhotoOpacity: Double = 0.5
 	var currentGuidePhotoEffect: GuidePhotoEffect = .normal
-	var isGuideGridEnabled: Bool = false
+	var shouldShowGuideGrid: Bool = false
 	var shouldShowGuidePhoto: Bool = true
 	var flashMode: FlashMode = .off
 
