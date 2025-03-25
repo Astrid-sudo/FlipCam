@@ -34,7 +34,7 @@ final class ShotViewModel: CameraGuideOverlay {
 	private(set) var guidePhotoOpacity: Double = 0.5
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
 	private(set) var processedGuidePhoto: UIImage?
-	var shouldShowGuidePhoto: Bool = true
+	private(set) var shouldShowGuidePhoto: Bool = true
 	private(set) var shouldShowGuideGrid: Bool = false
 	
 	init() {

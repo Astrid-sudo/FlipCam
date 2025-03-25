@@ -36,7 +36,7 @@ protocol CameraGuideOverlay: AnyObject {
 	var guidePhotoOpacity: Double { get }
 	var currentGuidePhotoEffect: GuidePhotoEffect { get }
 	var shouldShowGuideGrid: Bool { get }
-	var shouldShowGuidePhoto: Bool { get set }
+	var shouldShowGuidePhoto: Bool { get }
 	
 	func applyGuidePhoto(_ identifier: String)
 	func setGuidePhotoOpacity(_ opacity: Double)
