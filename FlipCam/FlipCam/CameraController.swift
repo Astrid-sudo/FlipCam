@@ -8,7 +8,6 @@ final class CameraController: Camera {
     private(set) var cameraStatus = CameraStatus.unknown
     private(set) var captureActivity = CaptureActivity.idle
     private(set) var isSwitchingCameraDevices = false
-    private(set) var prefersMinimizedUI = false
     private(set) var shouldFlashScreen = false
     private(set) var thumbnail: CGImage?
     private(set) var zoomFactor: CGFloat = 1.0
@@ -82,14 +81,6 @@ final class CameraController: Camera {
                     flashScreen()
                 } else {
                     captureActivity = activity
-                }
-            }
-        }
-
-        Task {
-            for await isShowingFullscreenControls in await captureService.$isShowingFullscreenControls.values {
-                withAnimation {
-                    prefersMinimizedUI = isShowingFullscreenControls
                 }
             }
         }

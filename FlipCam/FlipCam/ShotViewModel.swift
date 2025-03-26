@@ -23,7 +23,6 @@ final class ShotViewModel {
 	var cameraStatus: CameraStatus { cameraController.cameraStatus }
 	var captureActivity: CaptureActivity { cameraController.captureActivity }
 	var isSwitchingCameraDevices: Bool { cameraController.isSwitchingCameraDevices }
-	var prefersMinimizedUI: Bool { cameraController.prefersMinimizedUI }
 	var shouldFlashScreen: Bool { cameraController.shouldFlashScreen }
 	var thumbnail: CGImage? { cameraController.thumbnail }
 	

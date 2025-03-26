@@ -13,7 +13,6 @@ protocol Camera: AnyObject {
 	var cameraStatus: CameraStatus { get }
 	var captureActivity: CaptureActivity { get }
 	var previewSource: PreviewSource { get }
-	var prefersMinimizedUI: Bool { get }
 	var isSwitchingCameraDevices: Bool { get }
 	var shouldFlashScreen: Bool { get }
 	var thumbnail: CGImage? { get }
