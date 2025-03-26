@@ -15,7 +15,13 @@ final class GuidePhotoController: CameraGuideOverlay {
 	private(set) var guidePhotoIdentifier: String?
 	private(set) var guidePhotoOpacity: Double = 0.5
 	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
-	private(set) var processedGuidePhoto: UIImage?
+	var processedGuidePhoto: UIImage? {
+		guard let guidePhoto = guidePhoto else {
+			logger.info("There is no guide photo selected.")
+			return nil
+		}
+		return PhotoEffectProcessor.processPhoto(guidePhoto, with: currentGuidePhotoEffect)
+	}
 	private(set) var shouldShowGuidePhoto: Bool = true
 	private(set) var shouldShowGuideGrid: Bool = false
 
@@ -46,7 +52,6 @@ final class GuidePhotoController: CameraGuideOverlay {
 	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
 		currentGuidePhotoEffect = effect
 		saveGuidePhotoEffect()
-		processGuidePhoto()
 	}
 
 	func toggleGuidePhotoVisibility() {
@@ -63,28 +68,16 @@ final class GuidePhotoController: CameraGuideOverlay {
 	private func loadGuidePhoto() async {
 		guard let identifier = guidePhotoIdentifier else {
 			guidePhoto = nil
-			processedGuidePhoto = nil
 			logger.info("There is no guide photo selected.")
 			return
 		}
 
 		do {
 			self.guidePhoto = try await photoLoader.loadPhoto(withIdentifier: identifier)
-			processGuidePhoto()
 		} catch {
 			logger.error("Failed to load guide photo: \(error)")
 			self.guidePhoto = nil
-			self.processedGuidePhoto = nil
 		}
-	}
-
-	private func processGuidePhoto() {
-		guard let guidePhoto = guidePhoto else {
-			processedGuidePhoto = nil
-			logger.info("There is no guide photo selected.")
-			return
-		}
-		processedGuidePhoto = PhotoEffectProcessor.processPhoto(guidePhoto, with: currentGuidePhotoEffect)
 	}
 
 	private func resetGuidePhotoSetting() {

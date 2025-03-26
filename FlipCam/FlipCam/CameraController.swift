@@ -2,7 +2,6 @@ import SwiftUI
 
 @Observable
 final class CameraController: Camera {
-    var previewSource: PreviewSource { captureService.previewSource }
     private let captureService = CaptureService()
     private let mediaLibrary = MediaLibrary()
     
@@ -15,6 +14,8 @@ final class CameraController: Camera {
     private(set) var zoomFactor: CGFloat = 1.0
     private(set) var maxZoomFactor: CGFloat = 1.0
 	private(set) var flashMode: FlashMode = .off
+    
+    var previewSource: PreviewSource { captureService.previewSource }
 
     init() {
         observeThumbnails()
@@ -93,6 +94,7 @@ final class CameraController: Camera {
             }
         }
     }
+	
     private func observeThumbnails() {
         Task {
             for await thumbnail in mediaLibrary.thumbnails.compactMap({ $0 }) {

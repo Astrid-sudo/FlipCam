@@ -20,16 +20,17 @@ final class ShotViewModel {
 	let guidePhotoController: GuidePhotoController
 	
 	// Forward camera properties
-	var previewSource: PreviewSource { cameraController.previewSource }
 	var cameraStatus: CameraStatus { cameraController.cameraStatus }
 	var captureActivity: CaptureActivity { cameraController.captureActivity }
 	var isSwitchingCameraDevices: Bool { cameraController.isSwitchingCameraDevices }
 	var prefersMinimizedUI: Bool { cameraController.prefersMinimizedUI }
 	var shouldFlashScreen: Bool { cameraController.shouldFlashScreen }
 	var thumbnail: CGImage? { cameraController.thumbnail }
-	var error: Error?
-	var showErrorAlert: Bool = false
 	
+	// Error handling
+	private(set) var error: Error?
+	var showErrorAlert: Bool = false
+
 	// Forward guide photo properties
 	var guidePhotoIdentifier: String? { guidePhotoController.guidePhotoIdentifier }
 	var guidePhotoOpacity: Double { guidePhotoController.guidePhotoOpacity }

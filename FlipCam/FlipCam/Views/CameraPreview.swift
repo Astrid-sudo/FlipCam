@@ -13,8 +13,8 @@ struct CameraPreview: UIViewRepresentable {
 	private let source: PreviewSource
 	var camera: Camera
 
-	init(source: PreviewSource, camera: Camera) {
-		self.source = source
+	init(camera: Camera) {
+		self.source = camera.previewSource
 		self.camera = camera
 	}
 
