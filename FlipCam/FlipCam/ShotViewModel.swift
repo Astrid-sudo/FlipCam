@@ -14,8 +14,10 @@ enum FlashMode {
 }
 
 @Observable
-final class ShotViewModel: CameraGuideOverlay {
-	let cameraController = CameraController()
+@MainActor
+final class ShotViewModel {
+	let cameraController: CameraController
+	let guidePhotoController: GuidePhotoController
 	
 	// Forward camera properties
 	var previewSource: PreviewSource { cameraController.previewSource }
@@ -28,23 +30,25 @@ final class ShotViewModel: CameraGuideOverlay {
 	var error: Error?
 	var showErrorAlert: Bool = false
 	
-	// Guide Photo properties
-	private var guidePhoto: UIImage?
-	private(set) var guidePhotoIdentifier: String?
-	private(set) var guidePhotoOpacity: Double = 0.5
-	private(set) var currentGuidePhotoEffect: GuidePhotoEffect = .normal
-	private(set) var processedGuidePhoto: UIImage?
-	private(set) var shouldShowGuidePhoto: Bool = true
-	private(set) var shouldShowGuideGrid: Bool = false
+	// Forward guide photo properties
+	var guidePhotoIdentifier: String? { guidePhotoController.guidePhotoIdentifier }
+	var guidePhotoOpacity: Double { guidePhotoController.guidePhotoOpacity }
+	var currentGuidePhotoEffect: GuidePhotoEffect { guidePhotoController.currentGuidePhotoEffect }
+	var processedGuidePhoto: UIImage? { guidePhotoController.processedGuidePhoto }
+	var shouldShowGuidePhoto: Bool { guidePhotoController.shouldShowGuidePhoto }
+	var shouldShowGuideGrid: Bool { guidePhotoController.shouldShowGuideGrid }
 	
-	init() {
-		loadSavedGuidePhotoIdentifier()
-		loadSavedGuidePhotoOpacity()
-		loadSavedGuidePhotoEffect()
-		loadSavedGuidePhotoVisibility()
-		loadSavedGuideGridSetting()
+	private init(cameraController: CameraController, guidePhotoController: GuidePhotoController) {
+		self.cameraController = cameraController
+		self.guidePhotoController = guidePhotoController
 	}
-
+	
+	static func create() async -> ShotViewModel {
+		let cameraController = CameraController()
+		let guidePhotoController = GuidePhotoController(photoLoader: cameraController)
+		return ShotViewModel(cameraController: cameraController, guidePhotoController: guidePhotoController)
+	}
+	
 	func startCamera() async {
 		do {
 			try await cameraController.start()
@@ -85,126 +89,22 @@ final class ShotViewModel: CameraGuideOverlay {
 	// MARK: - Guide Photo Management
 
 	func applyGuidePhoto(_ identifier: String) {
-		saveGuidePhotoIdentifier(identifier)
-		resetGuidePhotoSetting()
-		Task {
-			await loadGuidePhoto()
-		}
+		guidePhotoController.applyGuidePhoto(identifier)
 	}
-
-	private func loadGuidePhoto() async {
-		guard let identifier = guidePhotoIdentifier else {
-			guidePhoto = nil
-			processedGuidePhoto = nil
-			logger.info("There is no guide photo selected.")
-			return
-		}
-
-		do {
-			self.guidePhoto = try await cameraController.loadPhoto(withIdentifier: identifier)
-			processGuidePhoto()
-		} catch {
-			logger.error("Failed to load guide photo: \(error)")
-			self.guidePhoto = nil
-			self.processedGuidePhoto = nil
-		}
-	}
-
-	private func saveGuidePhotoIdentifier(_ identifier: String) {
-		self.guidePhotoIdentifier = identifier
-		UserDefaults.standard.set(identifier, forKey: UserDefaultsKeys.guidePhotoIdentifier)
-	}
-
-	private func loadSavedGuidePhotoIdentifier() {
-		if let savedIdentifier = UserDefaults.standard.string(forKey: UserDefaultsKeys.guidePhotoIdentifier) {
-			self.guidePhotoIdentifier = savedIdentifier
-			Task {
-				await loadGuidePhoto()
-			}
-		}
-	}
-
+	
 	func setGuidePhotoOpacity(_ opacity: Double) {
-		self.guidePhotoOpacity = opacity
-		saveGuidePhotoOpacity()
+		guidePhotoController.setGuidePhotoOpacity(opacity)
 	}
-
-	private func saveGuidePhotoOpacity() {
-		UserDefaults.standard.set(guidePhotoOpacity, forKey: UserDefaultsKeys.guidePhotoOpacity)
-	}
-
-	private func loadSavedGuidePhotoOpacity() {
-		if let savedOpacity = UserDefaults.standard.object(forKey: UserDefaultsKeys.guidePhotoOpacity) as? Double {
-			self.guidePhotoOpacity = savedOpacity
-		}
-	}
-
-	private func resetGuidePhotoSetting() {
-		self.shouldShowGuidePhoto = true
-		saveGuidePhotoVisibility()
-
-		self.guidePhotoOpacity = 0.5
-		saveGuidePhotoOpacity()
-
-		self.currentGuidePhotoEffect = .normal
-		saveGuidePhotoEffect()
-	}
-
-	// MARK: - Guide Photo Effects
-
-	private func processGuidePhoto() {
-		guard let guidePhoto = guidePhoto else {
-			processedGuidePhoto = nil
-			logger.info("There is no guide photo selected.")
-			return
-		}
-		processedGuidePhoto = PhotoEffectProcessor.processPhoto(guidePhoto, with: currentGuidePhotoEffect)
-	}
-
+	
 	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
-		currentGuidePhotoEffect = effect
-		saveGuidePhotoEffect()
-		processGuidePhoto()
+		guidePhotoController.setGuidePhotoEffect(effect)
 	}
-
-	private func saveGuidePhotoEffect() {
-		UserDefaults.standard.set(currentGuidePhotoEffect.rawValue, forKey: UserDefaultsKeys.guidePhotoEffect)
-	}
-
-	private func loadSavedGuidePhotoEffect() {
-		if let savedEffect = UserDefaults.standard.string(forKey: UserDefaultsKeys.guidePhotoEffect),
-		   let effect = GuidePhotoEffect(rawValue: savedEffect) {
-			self.currentGuidePhotoEffect = effect
-		}
-	}
-
-	// MARK: - Guide Photo Visibility
-
+	
 	func toggleGuidePhotoVisibility() {
-		shouldShowGuidePhoto.toggle()
-		saveGuidePhotoVisibility()
+		guidePhotoController.toggleGuidePhotoVisibility()
 	}
-
-	private func saveGuidePhotoVisibility() {
-		UserDefaults.standard.set(shouldShowGuidePhoto, forKey: UserDefaultsKeys.shouldShowGuidePhoto)
-	}
-
-	private func loadSavedGuidePhotoVisibility() {
-		shouldShowGuidePhoto = UserDefaults.standard.bool(forKey: UserDefaultsKeys.shouldShowGuidePhoto)
-	}
-
-	// MARK: - Guide Grid Management
-
+	
 	func toggleGuideGrid() {
-		shouldShowGuideGrid.toggle()
-		saveGuideGridSetting()
-	}
-
-	private func saveGuideGridSetting() {
-		UserDefaults.standard.set(shouldShowGuideGrid, forKey: UserDefaultsKeys.shouldShowGuideGrid)
-	}
-
-	private func loadSavedGuideGridSetting() {
-		shouldShowGuideGrid = UserDefaults.standard.bool(forKey: UserDefaultsKeys.shouldShowGuideGrid)
+		guidePhotoController.toggleGuideGrid()
 	}
 }

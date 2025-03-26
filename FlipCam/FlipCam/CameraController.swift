@@ -93,19 +93,20 @@ final class CameraController: Camera {
             }
         }
     }
-    
-    func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
-		guard let photo = try await mediaLibrary.loadPhoto(withIdentifier: identifier) else {
-			throw CameraError.loadGuidePhotoFailed
-		}
-		return photo
-    }
-    
     private func observeThumbnails() {
         Task {
             for await thumbnail in mediaLibrary.thumbnails.compactMap({ $0 }) {
                 self.thumbnail = thumbnail
             }
         }
+    }
+}
+
+extension CameraController: PhotoLoader {
+    func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
+        guard let photo = try await mediaLibrary.loadPhoto(withIdentifier: identifier) else {
+            throw CameraError.loadGuidePhotoFailed
+        }
+        return photo
     }
 } 

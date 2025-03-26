@@ -8,10 +8,24 @@
 import SwiftUI
 
 struct ShotView: View {
-	@State private var viewModel = ShotViewModel()
+	@State private var viewModel: ShotViewModel?
 	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
+		Group {
+			if let viewModel {
+				mainContent(viewModel: viewModel)
+			} else {
+				ProgressView()
+			}
+		}
+		.task {
+			viewModel = await ShotViewModel.create()
+		}
+	}
+
+	@ViewBuilder
+	private func mainContent(viewModel: ShotViewModel) -> some View {
 		VStack {
 			PreviewContainer(camera: viewModel.cameraController) {
 				CameraPreview(source: viewModel.previewSource, camera: viewModel.cameraController)
@@ -22,7 +36,7 @@ struct ShotView: View {
 					.overlay(alignment: .center) {
 						GeometryReader { geometry in
 							if viewModel.shouldShowGuidePhoto {
-								guidePhoto(width: geometry.size.width, height: geometry.size.height)
+								guidePhoto(width: geometry.size.width, height: geometry.size.height, viewModel: viewModel)
 							}
 						}
 					}
@@ -55,7 +69,7 @@ struct ShotView: View {
 	}
 
 	@ViewBuilder
-	private func guidePhoto(width: CGFloat, height: CGFloat) -> some View {
+	private func guidePhoto(width: CGFloat, height: CGFloat, viewModel: ShotViewModel) -> some View {
 		if let processedGuidePhoto = viewModel.processedGuidePhoto {
 			Image(uiImage: processedGuidePhoto)
 				.resizable()

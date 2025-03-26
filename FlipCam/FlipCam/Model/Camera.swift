@@ -44,8 +44,12 @@ protocol CameraGuideOverlay: AnyObject {
 	func toggleGuidePhotoVisibility()
 }
 
+protocol PhotoLoader {
+	func loadPhoto(withIdentifier identifier: String) async throws -> UIImage
+}
+
 @Observable
-class PreviewCameraModel: Camera, CameraGuideOverlay {
+class PreviewCameraModel: Camera {
 	var cameraStatus: CameraStatus { status }
 	var prefersMinimizedUI = false
 	var shouldFlashScreen = false
@@ -62,10 +66,6 @@ class PreviewCameraModel: Camera, CameraGuideOverlay {
 	private(set) var thumbnail: CGImage?
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
-	var guidePhotoOpacity: Double = 0.5
-	var currentGuidePhotoEffect: GuidePhotoEffect = .normal
-	var shouldShowGuideGrid: Bool = false
-	var shouldShowGuidePhoto: Bool = true
 	var flashMode: FlashMode = .off
 
 
@@ -97,22 +97,6 @@ class PreviewCameraModel: Camera, CameraGuideOverlay {
 
 	func rampZoom(to factor: CGFloat) async throws {
 		zoomFactor = max(1.0, min(factor, maxZoomFactor))
-	}
-
-	func applyGuidePhoto(_ identifier: String) {
-		logger.debug("applyGuidePhoto isn't implemented in PreviewCamera.")
-	}
-
-	func setGuidePhotoOpacity(_ opacity: Double) {
-		logger.debug("setGuidePhotoOpacity isn't implemented in PreviewCamera.")
-	}
-
-	func setGuidePhotoEffect(_ effect: GuidePhotoEffect) {
-		logger.debug("setGuidePhotoEffect isn't implemented in PreviewCamera.")
-	}
-
-	func toggleGuidePhotoVisibility() {
-		logger.debug("toggleGuidePhotoVisibility isn't implemented in PreviewCamera.")
 	}
 
 	func setFlashMode(_ mode: FlashMode) async {
