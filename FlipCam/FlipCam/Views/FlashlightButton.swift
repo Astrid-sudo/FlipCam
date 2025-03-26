@@ -37,13 +37,13 @@ struct FlashlightButton<CameraModel: Camera>: View {
     private var flashIconName: String {
         switch camera.flashMode {
         case .off:
-            return "bolt.slash.fill"
+            return SystemImageNames.boltSlashFill
         case .on:
-            return "bolt.fill"
+            return SystemImageNames.boltFill
         case .auto:
-            return "bolt.badge.a"
+            return SystemImageNames.boltBadgeA
         @unknown default:
-            return "bolt.slash.fill"
+            return SystemImageNames.boltSlashFill
         }
     }
     

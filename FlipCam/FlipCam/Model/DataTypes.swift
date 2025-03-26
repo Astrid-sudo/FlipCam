@@ -60,27 +60,30 @@ enum CameraError: LocalizedError {
 	case previewLayerNotFound
 	case noActiveInput
 	case mediaLibraryUnauthorized
+	case loadGuidePhotoFailed
 
 	var errorDescription: String? {
 		switch self {
 		case .videoDeviceUnavailable:
-			return "No video device found for current input"
+			return ErrorMessages.noVideoDevice
 		case .addInputFailed:
-			return "Failed to add camera input to capture session"
+			return ErrorMessages.cameraInputFailed
 		case .addOutputFailed:
-			return "Failed to add output to capture session"
+			return ErrorMessages.outputFailed
 		case .setupFailed:
-			return "Failed to set up camera capture session"
+			return ErrorMessages.sessionSetupFailed
 		case .deviceChangeFailed:
-			return "Failed to change camera device"
+			return ErrorMessages.deviceChangeFailed
 		case .cameraUnauthorized:
-			return "Camera access is not authorized, please go to Settings > Apps > FlipCam to turn on Camera access permission."
+			return ErrorMessages.cameraAccessDenied
 		case .previewLayerNotFound:
-			return "Camera preview layer not found"
+			return ErrorMessages.previewLayerNotFound
 		case .noActiveInput:
-			return "No active camera input found"
+			return ErrorMessages.noActiveCameraInput
 		case .mediaLibraryUnauthorized:
-			return "Photos access is not authorized, please go to Settings > Apps > FlipCam to turn on Photos access permission."
+			return ErrorMessages.photosAccessDenied
+		case .loadGuidePhotoFailed:
+			return ErrorMessages.guidePhotoLoadFailed
 		}
 	}
 

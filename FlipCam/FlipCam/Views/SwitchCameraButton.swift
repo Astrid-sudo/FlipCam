@@ -7,20 +7,20 @@
 
 import SwiftUI
 
-struct SwitchCameraButton<CameraModel: Camera>: View {
+struct SwitchCameraButton: View {
 
-	@State var camera: CameraModel
+	@State var viewModel: ShotViewModel
 
 	var body: some View {
 		Button {
 			Task {
-				await camera.switchCameraDevices()
+				await viewModel.switchCameraDevices()
 			}
 		} label: {
-			Image(systemName: "arrow.triangle.2.circlepath")
+			Image(systemName: SystemImageNames.cameraSwitch)
 				.adaptiveSpacing()
 				.adaptiveButtonSize()
 		}
-		.allowsHitTesting(!camera.isSwitchingCameraDevices)
+		.allowsHitTesting(!viewModel.cameraController.isSwitchingCameraDevices)
 	}
 }

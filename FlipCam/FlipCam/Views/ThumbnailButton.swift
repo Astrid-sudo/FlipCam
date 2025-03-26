@@ -8,9 +8,9 @@
 import SwiftUI
 import PhotosUI
 
-struct ThumbnailButton<CameraModel: Camera>: View {
+struct ThumbnailButton: View {
 
-	@State var camera: CameraModel
+	@State var viewModel: ShotViewModel
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@State private var selectedItem: PhotosPickerItem?
 
@@ -28,7 +28,7 @@ struct ThumbnailButton<CameraModel: Camera>: View {
 			if let newItem {
 				Task {
 					if let identifier = newItem.itemIdentifier {
-						camera.applyGuidePhoto(identifier)
+						viewModel.applyGuidePhoto(identifier)
 					} else {
 						print("Can't find identifier")
 					}
@@ -39,7 +39,7 @@ struct ThumbnailButton<CameraModel: Camera>: View {
 
 	@ViewBuilder
 	var thumbnail: some View {
-		if let thumbnail = camera.thumbnail {
+		if let thumbnail = viewModel.thumbnail {
 			Image(thumbnail)
 				.resizable()
 				.aspectRatio(contentMode: .fill)

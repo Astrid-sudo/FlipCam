@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct GuideControl<CameraModel: Camera>: PlatformView {
+struct GuideControl: PlatformView {
 
 	@Environment(\.verticalSizeClass) var verticalSizeClass
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	let camera: CameraModel
+	let viewModel: ShotViewModel
 
 	var body: some View {
 			HStack {
@@ -27,29 +27,29 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 	@ViewBuilder
 	private var effectButtonsRow: some View {
 		HStack(spacing: horizontalSizeClass == .regular ? 20 : 10) {
-			EffectButton(systemName: "photo", 
+			EffectButton(systemName: SystemImageNames.photo, 
 						effect: .normal, 
 						selectedEffect: Binding(
-							get: { camera.currentGuidePhotoEffect },
-							set: { camera.setGuidePhotoEffect($0) }
+							get: { viewModel.currentGuidePhotoEffect },
+							set: { viewModel.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "circle.filled.pattern.diagonalline.rectangle", 
 						effect: .contrast, 
 						selectedEffect: Binding(
-							get: { camera.currentGuidePhotoEffect },
-							set: { camera.setGuidePhotoEffect($0) }
+							get: { viewModel.currentGuidePhotoEffect },
+							set: { viewModel.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "circle.rectangle.filled.pattern.diagonalline", 
 						effect: .inverse, 
 						selectedEffect: Binding(
-							get: { camera.currentGuidePhotoEffect },
-							set: { camera.setGuidePhotoEffect($0) }
+							get: { viewModel.currentGuidePhotoEffect },
+							set: { viewModel.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "applepencil.and.scribble", 
 						effect: .outline, 
 						selectedEffect: Binding(
-							get: { camera.currentGuidePhotoEffect },
-							set: { camera.setGuidePhotoEffect($0) }
+							get: { viewModel.currentGuidePhotoEffect },
+							set: { viewModel.setGuidePhotoEffect($0) }
 						))
 		}
 		.adaptiveSpacing()
@@ -58,10 +58,10 @@ struct GuideControl<CameraModel: Camera>: PlatformView {
 	@ViewBuilder
 	private var gridButton: some View {
 		Button {
-			camera.isGuideGridEnabled.toggle()
+			viewModel.toggleGuideGrid()
 		} label: {
-			Image(systemName: "grid")
-				.foregroundColor(camera.isGuideGridEnabled ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
+			Image(systemName: SystemImageNames.grid)
+				.foregroundColor(viewModel.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 		}
 	}
 
@@ -84,12 +84,3 @@ struct EffectButton: View {
 	}
 }
 
-/// Guide Photo Effects
-enum GuidePhotoEffect: String, CaseIterable, Identifiable {
-	case normal = "Normal"
-	case contrast = "Contrast"
-	case inverse = "Inverse"
-	case outline = "Outline"
-
-	var id: String { rawValue }
-}
