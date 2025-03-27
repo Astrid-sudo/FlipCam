@@ -103,3 +103,9 @@ extension CameraController: PhotoLoader {
         return photo
     }
 } 
+
+enum FlashMode {
+	case on
+	case off
+	case auto
+}

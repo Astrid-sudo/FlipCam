@@ -14,7 +14,7 @@ struct MainToolbar: PlatformView {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	@State var viewModel: ShotViewModel
+	let viewModel: ShotViewModelType
 
 	var body: some View {
 		HStack {

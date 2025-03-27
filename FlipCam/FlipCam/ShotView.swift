@@ -29,21 +29,21 @@ struct ShotView: View {
 		VStack {
 			PreviewContainer(camera: viewModel.cameraController) {
 				CameraPreview(camera: viewModel.cameraController)
-					.task {
-						await viewModel.startCamera()
+					.onAppear {
+						viewModel.input.startCamera.send()
 					}
 					.aspectRatio(3/4, contentMode: .fit)
 					.overlay(alignment: .center) {
 						GeometryReader { geometry in
-							if viewModel.shouldShowGuidePhoto {
-								guidePhoto(width: geometry.size.width, height: geometry.size.height, viewModel: viewModel)
+							if viewModel.output.shouldShowGuidePhoto {
+								guidePhoto(width: geometry.size.width, height: geometry.size.height)
 							}
 						}
 					}
 			}
 			.overlay(alignment: .center) {
 				GeometryReader { geometry in
-					if viewModel.shouldShowGuideGrid {
+					if viewModel.output.shouldShowGuideGrid {
 						gridLines
 							.frame(width: geometry.size.width, height: geometry.size.height)
 					}
@@ -53,30 +53,30 @@ struct ShotView: View {
 			OpacityControl(viewModel: viewModel)
 			MainToolbar(viewModel: viewModel)
 		}
-		.alert(ErrorMessages.error, isPresented: .constant(viewModel.showErrorAlert)) {
-			if let error = viewModel.error as? CameraError, error.isFatalError {
+		.alert(ErrorMessages.error, isPresented: .constant(viewModel.output.showErrorAlert)) {
+			if let error = viewModel.output.error as? CameraError, error.isFatalError {
 				Button(ErrorMessages.exitFlipCam) {
 					fatalError(error.localizedDescription)
 				}
 			} else {
 				Button(ErrorMessages.ok) {
-					viewModel.showErrorAlert = false
+					viewModel.output.showErrorAlert = false
 				}
 			}
 		} message: {
-			Text(viewModel.error?.localizedDescription ?? ErrorMessages.restart)
+			Text(viewModel.output.error?.localizedDescription ?? ErrorMessages.restart)
 		}
 	}
 
 	@ViewBuilder
-	private func guidePhoto(width: CGFloat, height: CGFloat, viewModel: ShotViewModel) -> some View {
-		if let processedGuidePhoto = viewModel.processedGuidePhoto {
+	private func guidePhoto(width: CGFloat, height: CGFloat) -> some View {
+		if let processedGuidePhoto = viewModel?.output.processedGuidePhoto {
 			Image(uiImage: processedGuidePhoto)
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.frame(width: width, height: height)
 				.clipped()
-				.opacity(viewModel.guidePhotoOpacity)
+				.opacity(viewModel?.output.guidePhotoOpacity ?? 0.5)
 		}
 	}
 

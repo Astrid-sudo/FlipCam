@@ -13,7 +13,7 @@ struct GuideControl: PlatformView {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	let viewModel: ShotViewModel
+	let viewModel: ShotViewModelType
 
 	var body: some View {
 			HStack {
@@ -27,30 +27,26 @@ struct GuideControl: PlatformView {
 	@ViewBuilder
 	private var effectButtonsRow: some View {
 		HStack(spacing: horizontalSizeClass == .regular ? 20 : 10) {
-			EffectButton(systemName: SystemImageNames.photo, 
-						effect: .normal, 
-						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
-						))
-			EffectButton(systemName: "circle.filled.pattern.diagonalline.rectangle", 
-						effect: .contrast, 
-						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
-						))
-			EffectButton(systemName: "circle.rectangle.filled.pattern.diagonalline", 
-						effect: .inverse, 
-						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
-						))
-			EffectButton(systemName: "applepencil.and.scribble", 
-						effect: .outline, 
-						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
-						))
+			EffectButton(systemName: SystemImageNames.photo,
+						effect: .normal,
+						selectedEffect: viewModel.output.currentGuidePhotoEffect) {
+				viewModel.input.setGuidePhotoEffect.send(.normal)
+			}
+			EffectButton(systemName: SystemImageNames.diagonalPatternRectangle,
+						effect: .contrast,
+						selectedEffect: viewModel.output.currentGuidePhotoEffect) {
+				viewModel.input.setGuidePhotoEffect.send(.contrast)
+			}
+			EffectButton(systemName: SystemImageNames.diagonalPatternRectangleFilled,
+						effect: .inverse,
+						selectedEffect: viewModel.output.currentGuidePhotoEffect) {
+				viewModel.input.setGuidePhotoEffect.send(.inverse)
+			}
+			EffectButton(systemName: SystemImageNames.pencilScribble,
+						effect: .outline,
+						selectedEffect: viewModel.output.currentGuidePhotoEffect) {
+				viewModel.input.setGuidePhotoEffect.send(.outline)
+			}
 		}
 		.adaptiveSpacing()
 	}
@@ -58,10 +54,10 @@ struct GuideControl: PlatformView {
 	@ViewBuilder
 	private var gridButton: some View {
 		Button {
-			viewModel.toggleGuideGrid()
+			viewModel.input.toggleGuideGrid.send()
 		} label: {
 			Image(systemName: SystemImageNames.grid)
-				.foregroundColor(viewModel.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
+				.foregroundColor(viewModel.output.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 		}
 	}
 
@@ -70,13 +66,12 @@ struct GuideControl: PlatformView {
 struct EffectButton: View {
 	let systemName: String
 	let effect: GuidePhotoEffect
-	@Binding var selectedEffect: GuidePhotoEffect
+	let selectedEffect: GuidePhotoEffect
+	let action: () -> Void
 	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
-		Button {
-			selectedEffect = effect
-		} label: {
+		Button(action: action) {
 			Image(systemName: systemName)
 				.foregroundColor(selectedEffect == effect ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 				.adaptiveButtonSize()
