@@ -151,51 +151,80 @@ final class ShotViewModel: ShotViewModelType {
 			.store(in: &cancellables)
 		
 		// Camera state bindings
-		cameraController.$cameraStatus
-			.assign(to: &output.$cameraStatus)
-		
-		cameraController.$captureActivity
-			.assign(to: &output.$captureActivity)
-		
-		cameraController.$isSwitchingCameraDevices
-			.assign(to: &output.$isSwitchingCameraDevices)
-		
-		cameraController.$shouldFlashScreen
-			.assign(to: &output.$shouldFlashScreen)
-		
-		cameraController.$thumbnail
-			.map { thumbnail in
-				if let thumbnail = thumbnail {
-					return Image(thumbnail)
-				}
-				return nil
+		Task { @MainActor in
+			for await status in cameraController.cameraStatus {
+				output.cameraStatus = status
 			}
-			.assign(to: &output.$thumbnail)
+		}
+		
+		Task { @MainActor in
+			for await activity in cameraController.captureActivity {
+				output.captureActivity = activity
+			}
+		}
+		
+		Task { @MainActor in
+			for await isSwitching in cameraController.isSwitchingCameraDevices {
+				output.isSwitchingCameraDevices = isSwitching
+			}
+		}
+		
+		Task { @MainActor in
+			for await shouldFlash in cameraController.shouldFlashScreen {
+				output.shouldFlashScreen = shouldFlash
+			}
+		}
+		
+		Task { @MainActor in
+			for await thumbnail in cameraController.thumbnail {
+				if let thumbnail = thumbnail {
+					output.thumbnail = Image(thumbnail)
+				} else {
+					output.thumbnail = nil
+				}
+			}
+		}
 		
 		// Guide photo state bindings
-		guidePhotoController.$guidePhotoIdentifier
-			.assign(to: &output.$guidePhotoIdentifier)
-		
-		guidePhotoController.$guidePhotoOpacity
-			.assign(to: &output.$guidePhotoOpacity)
-		
-		guidePhotoController.$currentGuidePhotoEffect
-			.assign(to: &output.$currentGuidePhotoEffect)
-		
-		guidePhotoController.$processedGuidePhoto
-			.map { photo in
-				if let photo = photo {
-					return Image(photo)
-				}
-				return nil
+		Task { @MainActor in
+			for await identifier in guidePhotoController.guidePhotoIdentifier {
+				output.guidePhotoIdentifier = identifier
 			}
-			.assign(to: &output.$processedGuidePhoto)
+		}
 		
-		guidePhotoController.$shouldShowGuidePhoto
-			.assign(to: &output.$shouldShowGuidePhoto)
+		Task { @MainActor in
+			for await opacity in guidePhotoController.guidePhotoOpacity {
+				output.guidePhotoOpacity = opacity
+			}
+		}
 		
-		guidePhotoController.$shouldShowGuideGrid
-			.assign(to: &output.$shouldShowGuideGrid)
+		Task { @MainActor in
+			for await effect in guidePhotoController.currentGuidePhotoEffect {
+				output.currentGuidePhotoEffect = effect
+			}
+		}
+		
+		Task { @MainActor in
+			for await photo in guidePhotoController.processedGuidePhoto {
+				if let photo = photo {
+					output.processedGuidePhoto = Image(photo)
+				} else {
+					output.processedGuidePhoto = nil
+				}
+			}
+		}
+		
+		Task { @MainActor in
+			for await shouldShow in guidePhotoController.shouldShowGuidePhoto {
+				output.shouldShowGuidePhoto = shouldShow
+			}
+		}
+		
+		Task { @MainActor in
+			for await shouldShow in guidePhotoController.shouldShowGuideGrid {
+				output.shouldShowGuideGrid = shouldShow
+			}
+		}
 	}
 	
 	// MARK: - Camera Methods

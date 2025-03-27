@@ -5,14 +5,118 @@ final class CameraController: Camera {
     private let captureService = CaptureService()
     private let mediaLibrary = MediaLibrary()
     
-    private(set) var cameraStatus = CameraStatus.unknown
-    private(set) var captureActivity = CaptureActivity.idle
-    private(set) var isSwitchingCameraDevices = false
-    private(set) var shouldFlashScreen = false
-    private(set) var thumbnail: CGImage?
-    private(set) var zoomFactor: CGFloat = 1.0
-    private(set) var maxZoomFactor: CGFloat = 1.0
-	private(set) var flashMode: FlashMode = .off
+    // MARK: - Public Properties
+    var cameraStatus: AsyncStream<CameraStatus> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await status in captureService.cameraStatus {
+                    continuation.yield(status)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var captureActivity: AsyncStream<CaptureActivity> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await activity in captureService.captureActivity {
+                    continuation.yield(activity)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var isSwitchingCameraDevices: AsyncStream<Bool> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await isSwitching in captureService.isSwitchingCameraDevices {
+                    continuation.yield(isSwitching)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var shouldFlashScreen: AsyncStream<Bool> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await shouldFlash in captureService.shouldFlashScreen {
+                    continuation.yield(shouldFlash)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var thumbnail: AsyncStream<CGImage?> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await thumbnail in mediaLibrary.thumbnails {
+                    continuation.yield(thumbnail)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var zoomFactor: AsyncStream<CGFloat> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await factor in captureService.zoomFactor {
+                    continuation.yield(factor)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var maxZoomFactor: AsyncStream<CGFloat> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await factor in captureService.maxZoomFactor {
+                    continuation.yield(factor)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
+    
+    var flashMode: AsyncStream<FlashMode> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await mode in captureService.flashMode {
+                    continuation.yield(mode)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
+    }
     
     var previewSource: PreviewSource { captureService.previewSource }
 
@@ -22,28 +126,22 @@ final class CameraController: Camera {
     
     func start() async throws {
         guard await captureService.isAuthorized else {
-            cameraStatus = .unauthorized
             throw CameraError.cameraUnauthorized
         }
         do {
             try await captureService.start()
-            observeState()
             cameraStatus = .running
         } catch {
             logger.error("Failed to start capture service. \(error)")
-            cameraStatus = .failed
             throw error
         }
     }
     
     func switchCameraDevices() async throws {
-        isSwitchingCameraDevices = true
-        defer { isSwitchingCameraDevices = false }
         try await captureService.selectNextCameraDevice()
     }
     
     func capturePhoto() async throws {
-        flashScreen()
         let photo = try await captureService.capturePhoto()
         try await mediaLibrary.save(photo: photo)
     }
@@ -54,38 +152,16 @@ final class CameraController: Camera {
     
     func setZoom(factor: CGFloat) async throws {
         try await captureService.setZoom(factor: factor)
-        zoomFactor = factor
     }
     
     func rampZoom(to factor: CGFloat) async throws {
         try await captureService.rampZoom(to: factor)
-        zoomFactor = factor
     }
     
     func setFlashMode(_ mode: FlashMode) async {
-        flashMode = mode
         await captureService.setFlashMode(mode)
     }
     
-    private func flashScreen() {
-        shouldFlashScreen = true
-        withAnimation(.linear(duration: 0.01)) {
-            shouldFlashScreen = false
-        }
-    }
-    
-    private func observeState() {
-        Task {
-            for await activity in await captureService.$captureActivity.values {
-                if activity.willCapture {
-                    flashScreen()
-                } else {
-                    captureActivity = activity
-                }
-            }
-        }
-    }
-	
     private func observeThumbnails() {
         Task {
             for await thumbnail in mediaLibrary.thumbnails.compactMap({ $0 }) {
@@ -96,13 +172,13 @@ final class CameraController: Camera {
 }
 
 extension CameraController: PhotoLoader {
-    func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
+    func loadPhoto(withIdentifier identifier: String) async throws -> Image {
         guard let photo = try await mediaLibrary.loadPhoto(withIdentifier: identifier) else {
             throw CameraError.loadGuidePhotoFailed
         }
-        return photo
+        return Image(photo)
     }
-} 
+}
 
 enum FlashMode {
 	case on

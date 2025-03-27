@@ -20,7 +20,7 @@ struct MainToolbar: PlatformView {
 		HStack {
 			HStack(spacing: 20) {
 				ThumbnailButton(viewModel: viewModel)
-				FlashlightButton(camera: viewModel.cameraController)
+//				FlashlightButton(camera: viewModel.cameraController)
 			}
 			Spacer()
 			CaptureButton(viewModel: viewModel)
