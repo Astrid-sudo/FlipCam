@@ -10,7 +10,7 @@ import PhotosUI
 
 struct ThumbnailButton: View {
 
-	@State var viewModel: ShotViewModel
+	@State var viewModel: ShotViewModelType
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@State private var selectedItem: PhotosPickerItem?
 
@@ -28,7 +28,7 @@ struct ThumbnailButton: View {
 			if let newItem {
 				Task {
 					if let identifier = newItem.itemIdentifier {
-						viewModel.applyGuidePhoto(identifier)
+						viewModel.input.applyGuidePhoto(identifier)
 					} else {
 						print("Can't find identifier")
 					}
@@ -39,7 +39,7 @@ struct ThumbnailButton: View {
 
 	@ViewBuilder
 	var thumbnail: some View {
-		if let thumbnail = viewModel.thumbnail {
+		if let thumbnail = viewModel.output.thumbnail {
 			Image(thumbnail)
 				.resizable()
 				.aspectRatio(contentMode: .fill)

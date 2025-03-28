@@ -13,9 +13,54 @@ enum FlashMode {
 	case auto
 }
 
+protocol ShotViewModelType {
+	var input: ShotViewModelInputType { get }
+	var output: ShotViewModelOutputType { get }
+}
+
+protocol ShotViewModelInputType {
+	static func create() async -> ShotViewModelType
+	func startCamera() async
+	func switchCameraDevices() async
+	func capturePhoto() async
+	func focusAndExpose(at point: CGPoint) async
+	func applyGuidePhoto(_ identifier: String)
+	func setGuidePhotoOpacity(_ opacity: Double)
+	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
+	func toggleGuidePhotoVisibility()
+	func toggleGuideGrid()
+	func dismissAlert()
+}
+
+protocol ShotViewModelOutputType {
+	var cameraStatus: CameraStatus { get }
+	var captureActivity: CaptureActivity { get }
+	var isSwitchingCameraDevices: Bool { get }
+	var shouldFlashScreen: Bool { get }
+	var thumbnail: CGImage? { get }
+
+	// Error handling
+	var showErrorAlert: Bool { get set }
+	var error: Error? { get }
+
+	// Forward guide photo properties
+	var guidePhotoIdentifier: String? { get }
+	var guidePhotoOpacity: Double { get }
+	var currentGuidePhotoEffect: GuidePhotoEffect { get }
+	var processedGuidePhoto: UIImage? { get }
+	var shouldShowGuidePhoto: Bool { get }
+	var shouldShowGuideGrid: Bool { get }
+
+	var cameraController: CameraController { get }
+	var guidePhotoController: GuidePhotoController { get }
+}
+
 @Observable
 @MainActor
-final class ShotViewModel {
+final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewModelOutputType {
+	var input: ShotViewModelInputType { return self }
+	var output: ShotViewModelOutputType { return self }
+
 	let cameraController: CameraController
 	let guidePhotoController: GuidePhotoController
 	
@@ -43,7 +88,7 @@ final class ShotViewModel {
 		self.guidePhotoController = guidePhotoController
 	}
 	
-	static func create() async -> ShotViewModel {
+	static func create() async -> ShotViewModelType {
 		let cameraController = CameraController()
 		let guidePhotoController = GuidePhotoController(photoLoader: cameraController)
 		return ShotViewModel(cameraController: cameraController, guidePhotoController: guidePhotoController)
@@ -85,7 +130,11 @@ final class ShotViewModel {
 		self.error = error
 		self.showErrorAlert = true
 	}
-	
+
+	func dismissAlert() {
+		self.showErrorAlert = false
+	}
+
 	// MARK: - Guide Photo Management
 
 	func applyGuidePhoto(_ identifier: String) {

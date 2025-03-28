@@ -13,7 +13,7 @@ struct GuideControl: PlatformView {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	let viewModel: ShotViewModel
+	let viewModel: ShotViewModelType
 
 	var body: some View {
 			HStack {
@@ -30,26 +30,26 @@ struct GuideControl: PlatformView {
 			EffectButton(systemName: SystemImageNames.photo, 
 						effect: .normal, 
 						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
+							get: { viewModel.output.currentGuidePhotoEffect },
+							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "circle.filled.pattern.diagonalline.rectangle", 
 						effect: .contrast, 
 						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
+							get: { viewModel.output.currentGuidePhotoEffect },
+							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "circle.rectangle.filled.pattern.diagonalline", 
 						effect: .inverse, 
 						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
+							get: { viewModel.output.currentGuidePhotoEffect },
+							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
 			EffectButton(systemName: "applepencil.and.scribble", 
 						effect: .outline, 
 						selectedEffect: Binding(
-							get: { viewModel.currentGuidePhotoEffect },
-							set: { viewModel.setGuidePhotoEffect($0) }
+							get: { viewModel.output.currentGuidePhotoEffect },
+							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
 		}
 		.adaptiveSpacing()
@@ -58,10 +58,10 @@ struct GuideControl: PlatformView {
 	@ViewBuilder
 	private var gridButton: some View {
 		Button {
-			viewModel.toggleGuideGrid()
+			viewModel.input.toggleGuideGrid()
 		} label: {
 			Image(systemName: SystemImageNames.grid)
-				.foregroundColor(viewModel.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
+				.foregroundColor(viewModel.output.shouldShowGuideGrid ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 		}
 	}
 
