@@ -21,6 +21,6 @@ struct SwitchCameraButton: View {
 				.adaptiveSpacing()
 				.adaptiveButtonSize()
 		}
-		.allowsHitTesting(!viewModel.output.cameraController.isSwitchingCameraDevices)
+		.allowsHitTesting(!viewModel.output.isSwitchingCameraDevices)
 	}
 }

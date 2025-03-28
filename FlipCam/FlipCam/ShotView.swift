@@ -27,8 +27,8 @@ struct ShotView: View {
 	@ViewBuilder
 	private func mainContent(viewModel: ShotViewModelType) -> some View {
 		VStack {
-			PreviewContainer(camera: viewModel.output.cameraController) {
-				CameraPreview(camera: viewModel.output.cameraController)
+			PreviewContainer(viewModel: viewModel) {
+				CameraPreview(viewModel: viewModel)
 					.task {
 						await viewModel.input.startCamera()
 					}

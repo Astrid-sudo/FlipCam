@@ -27,6 +27,9 @@ protocol ShotViewModelInputType {
 	func applyGuidePhoto(_ identifier: String)
 	func setGuidePhotoOpacity(_ opacity: Double)
 	func setGuidePhotoEffect(_ effect: GuidePhotoEffect)
+	func setFlashMode(_ mode: FlashMode) async
+	func rampZoom(to factor: CGFloat) async
+	func setZoom(to factor: CGFloat) async
 	func toggleGuidePhotoVisibility()
 	func toggleGuideGrid()
 	func dismissAlert()
@@ -38,6 +41,9 @@ protocol ShotViewModelOutputType {
 	var isSwitchingCameraDevices: Bool { get }
 	var shouldFlashScreen: Bool { get }
 	var thumbnail: CGImage? { get }
+	var flashMode: FlashMode { get }
+	var zoomFactor: CGFloat { get }
+	var previewSource: PreviewSource { get }
 
 	// Error handling
 	var showErrorAlert: Bool { get set }
@@ -50,9 +56,6 @@ protocol ShotViewModelOutputType {
 	var processedGuidePhoto: UIImage? { get }
 	var shouldShowGuidePhoto: Bool { get }
 	var shouldShowGuideGrid: Bool { get }
-
-	var cameraController: CameraController { get }
-	var guidePhotoController: GuidePhotoController { get }
 }
 
 @Observable
@@ -70,7 +73,10 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	var isSwitchingCameraDevices: Bool { cameraController.isSwitchingCameraDevices }
 	var shouldFlashScreen: Bool { cameraController.shouldFlashScreen }
 	var thumbnail: CGImage? { cameraController.thumbnail }
-	
+	var flashMode: FlashMode { cameraController.flashMode }
+	var zoomFactor: CGFloat { cameraController.zoomFactor }
+	var previewSource: PreviewSource { cameraController.previewSource }
+
 	// Error handling
 	private(set) var error: Error?
 	var showErrorAlert: Bool = false
@@ -125,7 +131,27 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 			handleError(error)
 		}
 	}
-	
+
+	func setFlashMode(_ mode: FlashMode) async {
+		await cameraController.setFlashMode(mode)
+	}
+
+	func rampZoom(to factor: CGFloat) async {
+		do {
+			try await cameraController.rampZoom(to: factor)
+		} catch {
+			handleError(error)
+		}
+	}
+
+	func setZoom(to factor: CGFloat) async {
+		do {
+			try await cameraController.setZoom(factor: factor)
+		} catch {
+			handleError(error)
+		}
+	}
+
 	private func handleError(_ error: Error) {
 		self.error = error
 		self.showErrorAlert = true

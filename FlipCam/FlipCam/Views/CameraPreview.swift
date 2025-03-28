@@ -11,11 +11,11 @@ import SwiftUI
 struct CameraPreview: UIViewRepresentable {
 
 	private let source: PreviewSource
-	var camera: Camera
+	var viewModel: ShotViewModelType
 
-	init(camera: Camera) {
-		self.source = camera.previewSource
-		self.camera = camera
+	init(viewModel: ShotViewModelType) {
+		self.source = viewModel.output.previewSource
+		self.viewModel = viewModel
 	}
 
 	func makeUIView(context: Context) -> PreviewView {
@@ -102,24 +102,16 @@ class Coordinator: NSObject {
 	@MainActor @objc func handlePinch(_ gesture: UIPinchGestureRecognizer) {
 		switch gesture.state {
 		case .began:
-			startZoom = parent.camera.zoomFactor
+			startZoom = parent.viewModel.output.zoomFactor
 		case .changed:
 			let newZoom = startZoom * gesture.scale
 			Task {
-				do {
-					try await parent.camera.setZoom(factor: newZoom)
-				} catch {
-					logger.error("Failed to setZoom.")
-				}
+				await parent.viewModel.input.setZoom(to: newZoom)
 			}
 		case .ended:
 			let finalZoom = startZoom * gesture.scale
 			Task {
-				do {
-					try await parent.camera.rampZoom(to: finalZoom)
-				} catch {
-					logger.error("Failed to rampZoom.")
-				}
+					await parent.viewModel.input.rampZoom(to: finalZoom)
 			}
 		default:
 			break
