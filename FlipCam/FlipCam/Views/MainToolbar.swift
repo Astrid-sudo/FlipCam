@@ -14,13 +14,13 @@ struct MainToolbar: PlatformView {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	@State var viewModel: ShotViewModel
+	@State var viewModel: ShotViewModelType
 
 	var body: some View {
 		HStack {
 			HStack(spacing: 20) {
 				ThumbnailButton(viewModel: viewModel)
-				FlashlightButton(camera: viewModel.cameraController)
+				FlashlightButton(viewModel: viewModel)
 			}
 			Spacer()
 			CaptureButton(viewModel: viewModel)

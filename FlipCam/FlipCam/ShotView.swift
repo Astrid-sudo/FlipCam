@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ShotView: View {
-	@State private var viewModel: ShotViewModel?
+	@State private var viewModel: ShotViewModelType?
 	@Environment(\.colorScheme) var colorScheme
 
 	var body: some View {
@@ -25,17 +25,17 @@ struct ShotView: View {
 	}
 
 	@ViewBuilder
-	private func mainContent(viewModel: ShotViewModel) -> some View {
+	private func mainContent(viewModel: ShotViewModelType) -> some View {
 		VStack {
-			PreviewContainer(camera: viewModel.cameraController) {
-				CameraPreview(camera: viewModel.cameraController)
+			PreviewContainer(viewModel: viewModel) {
+				CameraPreview(viewModel: viewModel)
 					.task {
-						await viewModel.startCamera()
+						await viewModel.input.startCamera()
 					}
 					.aspectRatio(3/4, contentMode: .fit)
 					.overlay(alignment: .center) {
 						GeometryReader { geometry in
-							if viewModel.shouldShowGuidePhoto {
+							if viewModel.output.shouldShowGuidePhoto {
 								guidePhoto(width: geometry.size.width, height: geometry.size.height, viewModel: viewModel)
 							}
 						}
@@ -43,7 +43,7 @@ struct ShotView: View {
 			}
 			.overlay(alignment: .center) {
 				GeometryReader { geometry in
-					if viewModel.shouldShowGuideGrid {
+					if viewModel.output.shouldShowGuideGrid {
 						gridLines
 							.frame(width: geometry.size.width, height: geometry.size.height)
 					}
@@ -53,30 +53,30 @@ struct ShotView: View {
 			OpacityControl(viewModel: viewModel)
 			MainToolbar(viewModel: viewModel)
 		}
-		.alert(ErrorMessages.error, isPresented: .constant(viewModel.showErrorAlert)) {
-			if let error = viewModel.error as? CameraError, error.isFatalError {
+		.alert(ErrorMessages.error, isPresented: .constant(viewModel.output.showErrorAlert)) {
+			if let error = viewModel.output.error as? CameraError, error.isFatalError {
 				Button(ErrorMessages.exitFlipCam) {
 					fatalError(error.localizedDescription)
 				}
 			} else {
 				Button(ErrorMessages.ok) {
-					viewModel.showErrorAlert = false
+					viewModel.input.dismissAlert()
 				}
 			}
 		} message: {
-			Text(viewModel.error?.localizedDescription ?? ErrorMessages.restart)
+			Text(viewModel.output.error?.localizedDescription ?? ErrorMessages.restart)
 		}
 	}
 
 	@ViewBuilder
-	private func guidePhoto(width: CGFloat, height: CGFloat, viewModel: ShotViewModel) -> some View {
-		if let processedGuidePhoto = viewModel.processedGuidePhoto {
+	private func guidePhoto(width: CGFloat, height: CGFloat, viewModel: ShotViewModelType) -> some View {
+		if let processedGuidePhoto = viewModel.output.processedGuidePhoto {
 			Image(uiImage: processedGuidePhoto)
 				.resizable()
 				.aspectRatio(contentMode: .fill)
 				.frame(width: width, height: height)
 				.clipped()
-				.opacity(viewModel.guidePhotoOpacity)
+				.opacity(viewModel.output.guidePhotoOpacity)
 		}
 	}
 

@@ -7,23 +7,23 @@
 
 import SwiftUI
 
-struct FlashlightButton<CameraModel: Camera>: View {
+struct FlashlightButton: View {
 
-    @State var camera: CameraModel
+	@State var viewModel: ShotViewModelType
 	@Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         Button {
             Task {
-                switch camera.flashMode {
+				switch viewModel.output.flashMode {
                 case .off:
-                    await camera.setFlashMode(.on)
+					await viewModel.input.setFlashMode(.on)
                 case .on:
-                    await camera.setFlashMode(.auto)
+                    await viewModel.input.setFlashMode(.auto)
                 case .auto:
-                    await camera.setFlashMode(.off)
+                    await viewModel.input.setFlashMode(.off)
                 @unknown default:
-                    await camera.setFlashMode(.off)
+                    await viewModel.input.setFlashMode(.off)
                 }
             }
         } label: {
@@ -35,7 +35,7 @@ struct FlashlightButton<CameraModel: Camera>: View {
     }
     
     private var flashIconName: String {
-        switch camera.flashMode {
+        switch viewModel.output.flashMode {
         case .off:
             return SystemImageNames.boltSlashFill
         case .on:
@@ -48,7 +48,7 @@ struct FlashlightButton<CameraModel: Camera>: View {
     }
     
     private var flashIconColor: Color {
-        switch camera.flashMode {
+        switch viewModel.output.flashMode {
         case .off:
 			return Color.themeForeground(colorScheme: colorScheme)
         case .on:

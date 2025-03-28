@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 struct CaptureButton: View {
 
-	@State var viewModel: ShotViewModel
+	@State var viewModel: ShotViewModelType
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
@@ -21,7 +21,7 @@ struct CaptureButton: View {
 	var body: some View {
 		PhotoCaptureButton {
 			Task {
-				await viewModel.capturePhoto()
+				await viewModel.input.capturePhoto()
 			}
 		}
 		.aspectRatio(1.0, contentMode: .fit)

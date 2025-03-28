@@ -13,29 +13,29 @@ struct OpacityControl: PlatformView {
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 	@Environment(\.colorScheme) var colorScheme
 
-	@State var viewModel: ShotViewModel
+	@State var viewModel: ShotViewModelType
 
 	var body: some View {
 		HStack {
 			Button {
-				viewModel.toggleGuidePhotoVisibility()
+				viewModel.input.toggleGuidePhotoVisibility()
 			} label: {
-				Image(systemName: viewModel.shouldShowGuidePhoto ? "eye" : "eye.slash")
+				Image(systemName: viewModel.output.shouldShowGuidePhoto ? SystemImageNames.eye : SystemImageNames.eyeSlash)
 					.adaptiveSpacing()
-					.foregroundColor(viewModel.shouldShowGuidePhoto ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
+					.foregroundColor(viewModel.output.shouldShowGuidePhoto ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()
 			}
 
 			Slider(value: Binding(
-				get: { viewModel.guidePhotoOpacity },
-				set: { viewModel.setGuidePhotoOpacity($0) }
+				get: { viewModel.output.guidePhotoOpacity },
+				set: { viewModel.input.setGuidePhotoOpacity($0) }
 			), in: 0.1...1.0, step: 0.05)
 			.tint(Color.themeAccent(colorScheme: colorScheme))
 
 			Button {
-				viewModel.setGuidePhotoOpacity(0.5)
+				viewModel.input.setGuidePhotoOpacity(0.5)
 			} label: {
-				Image(systemName: "circle.lefthalf.filled")
+				Image(systemName: SystemImageNames.circleLeftHalfFilled)
 					.adaptiveSpacing()
 					.foregroundColor(Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()
