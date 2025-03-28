@@ -20,7 +20,7 @@ struct OpacityControl: PlatformView {
 			Button {
 				viewModel.input.toggleGuidePhotoVisibility()
 			} label: {
-				Image(systemName: viewModel.output.shouldShowGuidePhoto ? "eye" : "eye.slash")
+				Image(systemName: viewModel.output.shouldShowGuidePhoto ? SystemImageNames.eye : SystemImageNames.eyeSlash)
 					.adaptiveSpacing()
 					.foregroundColor(viewModel.output.shouldShowGuidePhoto ? Color.themeAccent(colorScheme: colorScheme) : Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()
@@ -35,7 +35,7 @@ struct OpacityControl: PlatformView {
 			Button {
 				viewModel.input.setGuidePhotoOpacity(0.5)
 			} label: {
-				Image(systemName: "circle.lefthalf.filled")
+				Image(systemName: SystemImageNames.circleLeftHalfFilled)
 					.adaptiveSpacing()
 					.foregroundColor(Color.themeForeground(colorScheme: colorScheme))
 					.adaptiveButtonSize()

@@ -45,7 +45,7 @@ struct ThumbnailButton: View {
 				.aspectRatio(contentMode: .fill)
 				.animation(.easeInOut(duration: 0.3), value: thumbnail)
 		} else {
-			Image(systemName: "photo.stack")
+			Image(systemName: SystemImageNames.photoStack)
 		}
 	}
 }

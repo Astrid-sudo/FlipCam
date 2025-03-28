@@ -33,19 +33,19 @@ struct GuideControl: PlatformView {
 							get: { viewModel.output.currentGuidePhotoEffect },
 							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
-			EffectButton(systemName: "circle.filled.pattern.diagonalline.rectangle", 
+			EffectButton(systemName: SystemImageNames.diagonalPatternRectangle, 
 						effect: .contrast, 
 						selectedEffect: Binding(
 							get: { viewModel.output.currentGuidePhotoEffect },
 							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
-			EffectButton(systemName: "circle.rectangle.filled.pattern.diagonalline", 
+			EffectButton(systemName: SystemImageNames.diagonalPatternRectangleFilled, 
 						effect: .inverse, 
 						selectedEffect: Binding(
 							get: { viewModel.output.currentGuidePhotoEffect },
 							set: { viewModel.input.setGuidePhotoEffect($0) }
 						))
-			EffectButton(systemName: "applepencil.and.scribble", 
+			EffectButton(systemName: SystemImageNames.pencilScribble, 
 						effect: .outline, 
 						selectedEffect: Binding(
 							get: { viewModel.output.currentGuidePhotoEffect },
