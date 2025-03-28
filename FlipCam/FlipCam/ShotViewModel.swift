@@ -64,9 +64,9 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	var input: ShotViewModelInputType { return self }
 	var output: ShotViewModelOutputType { return self }
 
-	let cameraController: CameraController
-	let guidePhotoController: GuidePhotoController
-	
+	private let cameraController: CameraController
+	private let guidePhotoController: GuidePhotoController
+
 	// Forward camera properties
 	var cameraStatus: CameraStatus { cameraController.cameraStatus }
 	var captureActivity: CaptureActivity { cameraController.captureActivity }
@@ -77,10 +77,6 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	var zoomFactor: CGFloat { cameraController.zoomFactor }
 	var previewSource: PreviewSource { cameraController.previewSource }
 
-	// Error handling
-	private(set) var error: Error?
-	var showErrorAlert: Bool = false
-
 	// Forward guide photo properties
 	var guidePhotoIdentifier: String? { guidePhotoController.guidePhotoIdentifier }
 	var guidePhotoOpacity: Double { guidePhotoController.guidePhotoOpacity }
@@ -88,7 +84,11 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	var processedGuidePhoto: UIImage? { guidePhotoController.processedGuidePhoto }
 	var shouldShowGuidePhoto: Bool { guidePhotoController.shouldShowGuidePhoto }
 	var shouldShowGuideGrid: Bool { guidePhotoController.shouldShowGuideGrid }
-	
+
+	// Error handling
+	private(set) var error: Error?
+	var showErrorAlert: Bool = false
+
 	private init(cameraController: CameraController, guidePhotoController: GuidePhotoController) {
 		self.cameraController = cameraController
 		self.guidePhotoController = guidePhotoController
