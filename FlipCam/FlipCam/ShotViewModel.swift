@@ -92,7 +92,7 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	private(set) var error: Error?
 	var showErrorAlert: Bool = false
 
-	private init(cameraController: CameraController, guidePhotoController: GuidePhotoController) {
+	init(cameraController: CameraController, guidePhotoController: GuidePhotoController) {
 		self.cameraController = cameraController
 		self.guidePhotoController = guidePhotoController
 	}
