@@ -54,11 +54,6 @@
 			path = FlipCamTests;
 			sourceTree = "<group>";
 		};
-		8FF483302D7911A600260AEF /* FlipCamUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = FlipCamUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +87,6 @@
 				8FEE16052D97A9BD00B26BC2 /* FlipCam.xctestplan */,
 				8FF483152D7911A300260AEF /* FlipCam */,
 				8FF483262D7911A600260AEF /* FlipCamTests */,
-				8FF483302D7911A600260AEF /* FlipCamUITests */,
 				8FF483142D7911A300260AEF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -167,9 +161,6 @@
 			);
 			dependencies = (
 				8FF4832F2D7911A600260AEF /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				8FF483302D7911A600260AEF /* FlipCamUITests */,
 			);
 			name = FlipCamUITests;
 			packageProductDependencies = (
