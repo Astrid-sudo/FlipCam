@@ -13,11 +13,13 @@ enum FlashMode {
 	case auto
 }
 
+@MainActor
 protocol ShotViewModelType {
 	var input: ShotViewModelInputType { get }
 	var output: ShotViewModelOutputType { get }
 }
 
+@MainActor
 protocol ShotViewModelInputType {
 	static func create() async -> ShotViewModelType
 	func startCamera() async
@@ -35,6 +37,7 @@ protocol ShotViewModelInputType {
 	func dismissAlert()
 }
 
+@MainActor
 protocol ShotViewModelOutputType {
 	var cameraStatus: CameraStatus { get }
 	var captureActivity: CaptureActivity { get }
