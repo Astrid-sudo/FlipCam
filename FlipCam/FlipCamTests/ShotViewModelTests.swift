@@ -44,6 +44,17 @@ struct ShotViewModelTests {
 		await #expect(viewModel.output.processedGuidePhoto != nil)
 	}
 
+	@Test("Capture photo method can be called through view model")
+	func testCapturePhoto() async throws {
+		let mockPhotoLoader = MockPhotoLoader()
+		let mockCameraController = await MockCameraController()
+		let viewModel = await ShotViewModel(cameraController: mockCameraController,
+											guidePhotoController: GuidePhotoController(photoLoader: mockPhotoLoader))
+
+		await viewModel.input.capturePhoto()
+		await #expect(mockCameraController.capturePhotoIsCalled == true)
+	}
+
 	private class MockPhotoLoader: PhotoLoader {
 		func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
 			return UIImage()

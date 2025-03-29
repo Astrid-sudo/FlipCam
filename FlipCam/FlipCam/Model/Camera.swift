@@ -66,7 +66,7 @@ class MockCameraController: Camera {
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
 	var flashMode: FlashMode = .off
-
+	private(set) var capturePhotoIsCalled = false
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -83,6 +83,7 @@ class MockCameraController: Camera {
 	}
 
 	func capturePhoto() async throws {
+		capturePhotoIsCalled = true
 		logger.debug("Photo capture isn't implemented in PreviewCamera.")
 	}
 
