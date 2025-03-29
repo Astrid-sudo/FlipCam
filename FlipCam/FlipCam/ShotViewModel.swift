@@ -67,7 +67,7 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	var input: ShotViewModelInputType { return self }
 	var output: ShotViewModelOutputType { return self }
 
-	private let cameraController: CameraController
+	private let cameraController: Camera
 	private let guidePhotoController: GuidePhotoController
 
 	// Forward camera properties
@@ -92,13 +92,16 @@ final class ShotViewModel: ShotViewModelType, ShotViewModelInputType, ShotViewMo
 	private(set) var error: Error?
 	var showErrorAlert: Bool = false
 
-	init(cameraController: CameraController, guidePhotoController: GuidePhotoController) {
+	init(cameraController: Camera, guidePhotoController: GuidePhotoController) {
 		self.cameraController = cameraController
 		self.guidePhotoController = guidePhotoController
 	}
 	
 	static func create() async -> ShotViewModelType {
-		let cameraController = CameraController()
+		var cameraController: Camera = CameraController()
+#if targetEnvironment(simulator)
+		cameraController = MockCameraController()
+#endif
 		let guidePhotoController = GuidePhotoController(photoLoader: cameraController)
 		return ShotViewModel(cameraController: cameraController, guidePhotoController: guidePhotoController)
 	}
