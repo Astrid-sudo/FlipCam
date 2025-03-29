@@ -42,11 +42,17 @@ struct CameraPreview: UIViewRepresentable {
 	#if targetEnvironment(simulator)
 			// The capture APIs require running on a real device. If running
 			// in Simulator, display a static image to represent the video feed.
-			let imageView = UIImageView(frame: UIScreen.main.bounds)
-			imageView.image = UIImage(named: "video_mode")
+			let imageView = UIImageView()
+			imageView.image = UIImage(named: "tonku")
 			imageView.contentMode = .scaleAspectFill
-			imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+			imageView.translatesAutoresizingMaskIntoConstraints = false
 			addSubview(imageView)
+			NSLayoutConstraint.activate([
+				imageView.topAnchor.constraint(equalTo: topAnchor),
+				imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+				imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+				imageView.bottomAnchor.constraint(equalTo: bottomAnchor)
+			])
 	#endif
 		}
 

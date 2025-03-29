@@ -24,6 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8FEE16052D97A9BD00B26BC2 /* FlipCam.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FlipCam.xctestplan; sourceTree = "<group>"; };
 		8FF483132D7911A300260AEF /* FlipCam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlipCam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF483232D7911A600260AEF /* FlipCamTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlipCamTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF4832D2D7911A600260AEF /* FlipCamUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlipCamUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,11 +52,6 @@
 		8FF483262D7911A600260AEF /* FlipCamTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FlipCamTests;
-			sourceTree = "<group>";
-		};
-		8FF483302D7911A600260AEF /* FlipCamUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = FlipCamUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +84,9 @@
 		8FF4830A2D7911A300260AEF = {
 			isa = PBXGroup;
 			children = (
+				8FEE16052D97A9BD00B26BC2 /* FlipCam.xctestplan */,
 				8FF483152D7911A300260AEF /* FlipCam */,
 				8FF483262D7911A600260AEF /* FlipCamTests */,
-				8FF483302D7911A600260AEF /* FlipCamUITests */,
 				8FF483142D7911A300260AEF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,9 +161,6 @@
 			);
 			dependencies = (
 				8FF4832F2D7911A600260AEF /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				8FF483302D7911A600260AEF /* FlipCamUITests */,
 			);
 			name = FlipCamUITests;
 			packageProductDependencies = (

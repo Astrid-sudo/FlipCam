@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "197C9B74-11F6-4CB9-AAAB-3D1FA33A292E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FlipCam.xcodeproj",
+      "identifier" : "8FF483122D7911A300260AEF",
+      "name" : "FlipCam"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FlipCam.xcodeproj",
+        "identifier" : "8FF483222D7911A600260AEF",
+        "name" : "FlipCamTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FlipCam.xcodeproj",
+        "identifier" : "8FF4832C2D7911A600260AEF",
+        "name" : "FlipCamUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

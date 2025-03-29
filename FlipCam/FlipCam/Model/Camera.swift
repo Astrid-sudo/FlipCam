@@ -9,7 +9,7 @@ import SwiftUI
 
 // Core camera functionality
 @MainActor
-protocol Camera: AnyObject {
+protocol Camera: PhotoLoader, AnyObject {
 	var cameraStatus: CameraStatus { get }
 	var captureActivity: CaptureActivity { get }
 	var previewSource: PreviewSource { get }
@@ -48,7 +48,7 @@ protocol PhotoLoader {
 }
 
 @Observable
-class PreviewCameraModel: Camera {
+class MockCameraController: Camera {
 	var cameraStatus: CameraStatus { status }
 	var prefersMinimizedUI = false
 	var shouldFlashScreen = false
@@ -66,7 +66,7 @@ class PreviewCameraModel: Camera {
 	var zoomFactor: CGFloat = 1.0
 	var maxZoomFactor: CGFloat = 4.0
 	var flashMode: FlashMode = .off
-
+	private(set) var capturePhotoIsCalled = false
 
 	init(status: CameraStatus = .unknown) {
 		self.status = status
@@ -83,6 +83,7 @@ class PreviewCameraModel: Camera {
 	}
 
 	func capturePhoto() async throws {
+		capturePhotoIsCalled = true
 		logger.debug("Photo capture isn't implemented in PreviewCamera.")
 	}
 
@@ -100,5 +101,11 @@ class PreviewCameraModel: Camera {
 
 	func setFlashMode(_ mode: FlashMode) async {
 		logger.debug("setFlashMode isn't implemented in PreviewCamera.")
+	}
+}
+
+extension MockCameraController: PhotoLoader {
+	func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
+		UIImage(named: "tonku_guide") ?? UIImage()
 	}
 }
