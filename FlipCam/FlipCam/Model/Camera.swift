@@ -105,6 +105,6 @@ class MockCameraController: Camera {
 
 extension MockCameraController: PhotoLoader {
 	func loadPhoto(withIdentifier identifier: String) async throws -> UIImage {
-		UIImage()
+		UIImage(named: "tonku_guide") ?? UIImage()
 	}
 }
