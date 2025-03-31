@@ -50,21 +50,63 @@
 - **Memory Management**: Optimized image caching
 - **UI Integration**: Smooth overlay system
 
+## Architecture
+
+### Component Diagram
+
+```mermaid
+graph TD
+    subgraph UI Layer
+        A[ShotView] --> B[ShotViewModel]
+        B --> C[CameraController]
+        B --> D[GuidePhotoController]
+    end
+
+    subgraph Camera Layer
+        C --> F[CaptureService]
+        F --> G[PhotoCapture]
+        F --> H[DeviceLookup]
+        F --> I[SystemPreferredCameraObserver]
+    end
+
+    subgraph Guide Photo Layer
+        D --> J[PhotoLoader]
+        D --> K[ImageProcessor]
+    end
+```
+
+### Architecture Overview
+
+FlipCam follows a clean MVVM architecture with clear separation of concerns:
+
+#### UI Layer
+- **ShotView**: Main SwiftUI view handling user interface
+- **ShotViewModel**: Coordinates between UI and business logic
+- **GuidePhotoController**: Manages guide photo functionality
+- **CameraController**: Handles camera operations
+
+#### Camera Layer
+- **CaptureService**: Main coordinator for camera operations
+- **PhotoCapture**: Handles photo capture process
+- **DeviceLookup**: Manages camera device discovery and selection
+- **SystemPreferredCameraObserver**: Monitors system camera preferences
+
+#### Guide Photo Layer
+- **PhotoLoader**: Handles guide photo loading
+- **ImageProcessor**: Processes and applies effects to guide photos
+
+
+### Key Design Patterns
+- **MVVM**: Separates UI logic from business logic
+- **Protocol-Oriented**: Enables flexible component composition
+- **Dependency Injection**: Facilitates testing and modularity
+- **Observer Pattern**: Handles real-time updates
+
 ## Requirements
 - iOS 18.0
 - Xcode 16.0
 - Swift 5
 
-## Project Structure
-```
-FlipCam/
-├── Views/           # SwiftUI views
-├── Model/           # Data models
-├── Capture/         # Camera capture logic
-├── Extensions/      # Swift extensions
-├── Support/         # Supporting files
-└── Assets.xcassets/ # App resources
-```
 ## Test Plan
 
 ### Overview
