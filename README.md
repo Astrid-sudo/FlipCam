@@ -9,9 +9,8 @@
 
 ## Table of Contents
 * [Features](#Features)
-* [Technical Highlights](#Technical-Highlights)
+* [Architecture](#Architecture)
 * [Requirements](#Requirements)
-* [Project Structure](#Project-Structure)
 * [Test Plan](#Test-Plan)
 * [Contact](#Contact)
 
@@ -29,26 +28,6 @@
 - **Opacity Control**: Adjust guide photo transparency
 - **Visual Effects**: Multiple effects for guide photo display
 - **Visibility Toggle**: Show/hide guide photos instantly
-
-## Technical Highlights
-
-### Architecture
-- **MVVM Pattern**: Clean separation of concerns with ViewModels
-- **Protocol-Oriented Design**: Flexible and testable components
-- **Async/Await**: Modern concurrency handling
-- **SwiftUI Integration**: Modern UI framework implementation
-
-### Camera Implementation
-- **AVFoundation Integration**: Advanced camera controls
-- **Real-time Preview**: Efficient preview rendering
-- **Device Management**: Seamless camera switching
-- **Focus & Exposure**: Precise control over camera settings
-
-### Guide Photo System
-- **Image Processing**: Efficient guide photo handling
-- **Effect Pipeline**: Real-time effect application
-- **Memory Management**: Optimized image caching
-- **UI Integration**: Smooth overlay system
 
 ## Architecture
 
@@ -95,12 +74,13 @@ FlipCam follows a clean MVVM architecture with clear separation of concerns:
 - **PhotoLoader**: Handles guide photo loading
 - **ImageProcessor**: Processes and applies effects to guide photos
 
-
 ### Key Design Patterns
 - **MVVM**: Separates UI logic from business logic
 - **Protocol-Oriented**: Enables flexible component composition
 - **Dependency Injection**: Facilitates testing and modularity
 - **Observer Pattern**: Handles real-time updates
+- **Async/Await**: Modern concurrency handling
+- **SwiftUI Integration**: Modern UI framework implementation
 
 ## Requirements
 - iOS 18.0
@@ -110,7 +90,7 @@ FlipCam follows a clean MVVM architecture with clear separation of concerns:
 ## Test Plan
 
 ### Overview
-FlipCam's test suite is designed to ensure the reliability and functionality of the app's core features. The tests are organized into two main test suites that cover the essential components of the application.
+FlipCam's test suite ensures the reliability and functionality of the app's core features. The tests are organized into two main test suites that cover the essential components of the application.
 
 ### Test Structure
 
@@ -153,3 +133,6 @@ The GuidePhotoController test suite focuses on the specific functionality of man
 - Mock objects are used to isolate components and ensure reliable testing
 - Asynchronous operations are properly handled with async/await
 - Each test focuses on a specific functionality to maintain clarity and maintainability
+
+## Contact
+Astrid Lin - tingan.l1216@gmail.com
