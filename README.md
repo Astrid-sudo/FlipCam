@@ -2,7 +2,7 @@
 
 <h1 align="center">FlipCam</h1>
 <p align="center">
-<img src="FlipCam/FlipCam/Assets.xcassets/AppIcon.appiconset/Icon-1024@2x.png" width="200" height="200"/>
+<img src="FlipCam/Assets.xcassets/AppIcon.appiconset/Icon-1024@2x.png" width="200" height="200"/>
 </p>
 <h2 align="center">Capture perfect moments with guided photography.</h2>
 <h4 align="center">An innovative camera app that helps you take better photos using guide photos and advanced camera controls.</h4>
@@ -34,17 +34,17 @@
 
 ### App Demo
 <p align="center">
-<img src="FlipCam/FlipCam/Screenshots/FlipCam_demo.gif" width="300" height="600"/>
+<img src="FlipCam/Screenshots/FlipCam_demo.gif" width="300" height="600"/>
 </p>
 
 ### Guide Photo Effects
 <p align="center">
 <table>
 <tr>
-<td><img src="FlipCam/FlipCam/Screenshots/effect_normal.png" width="200" height="400"/></td>
-<td><img src="FlipCam/FlipCam/Screenshots/effect_outline.png" width="200" height="400"/></td>
-<td><img src="FlipCam/FlipCam/Screenshots/effect_inverse.png" width="200" height="400"/></td>
-<td><img src="FlipCam/FlipCam/Screenshots/effect_contrast.png" width="200" height="400"/></td>
+<td><img src="FlipCam/Screenshots/effect_normal.png" width="200" height="400"/></td>
+<td><img src="FlipCam/Screenshots/effect_outline.png" width="200" height="400"/></td>
+<td><img src="FlipCam/Screenshots/effect_inverse.png" width="200" height="400"/></td>
+<td><img src="FlipCam/Screenshots/effect_contrast.png" width="200" height="400"/></td>
 </tr>
 <tr>
 <td align="center">Normal</td>
