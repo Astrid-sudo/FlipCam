@@ -1,11 +1,13 @@
-# FlipCam
-
-<h1 align="center">FlipCam</h1>
+<h1 align="center">FlipCam_ </h1>
 <p align="center">
 <img src="FlipCam/FlipCam/Assets.xcassets/AppIcon.appiconset/Nature_River_1024.png" width="200" height="200"/>
 </p>
 <h2 align="center">Capture perfect moments with guided photography.</h2>
 <h4 align="center">An innovative camera app that helps you take better photos using guide photos and advanced camera controls.</h4>
+
+<p align="center"><a href="https://apps.apple.com/tw/app/flipcam/id6743663720">
+<img src="https://i.imgur.com/X9tPvTS.png" width="120" height="40"/>
+</a></p>
 
 ## Table of Contents
 * [Features](#Features)
