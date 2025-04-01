@@ -9,6 +9,7 @@
 
 ## Table of Contents
 * [Features](#Features)
+* [Screenshots](#Screenshots)
 * [Architecture](#Architecture)
 * [Requirements](#Requirements)
 * [Test Plan](#Test-Plan)
@@ -28,6 +29,31 @@
 - **Opacity Control**: Adjust guide photo transparency
 - **Visual Effects**: Multiple effects for guide photo display
 - **Visibility Toggle**: Show/hide guide photos instantly
+
+## Screenshots
+
+### App Demo
+<p align="center">
+<img src="FlipCam/FlipCam/Screenshots/FlipCam_demo.gif" width="300" height="600"/>
+</p>
+
+### Guide Photo Effects
+<p align="center">
+<table>
+<tr>
+<td><img src="FlipCam/FlipCam/Screenshots/effect_normal.png" width="200" height="400"/></td>
+<td><img src="FlipCam/FlipCam/Screenshots/effect_outline.png" width="200" height="400"/></td>
+<td><img src="FlipCam/FlipCam/Screenshots/effect_inverse.png" width="200" height="400"/></td>
+<td><img src="FlipCam/FlipCam/Screenshots/effect_contrast.png" width="200" height="400"/></td>
+</tr>
+<tr>
+<td align="center">Normal</td>
+<td align="center">Outline</td>
+<td align="center">Inverse</td>
+<td align="center">Contrast</td>
+</tr>
+</table>
+</p>
 
 ## Architecture
 
