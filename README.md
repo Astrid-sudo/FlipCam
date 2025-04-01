@@ -2,7 +2,7 @@
 
 <h1 align="center">FlipCam</h1>
 <p align="center">
-<img src="FlipCam/Assets.xcassets/AppIcon.appiconset/Icon-1024@2x.png" width="200" height="200"/>
+<img src="FlipCam/FlipCam/Assets.xcassets/AppIcon.appiconset/Nature_River_1024.png" width="200" height="200"/>
 </p>
 <h2 align="center">Capture perfect moments with guided photography.</h2>
 <h4 align="center">An innovative camera app that helps you take better photos using guide photos and advanced camera controls.</h4>
