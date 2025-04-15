@@ -1,31 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Nature_River_1024 1.png",
-      "idiom" : "universal",
-      "platform" : "ios",
-      "size" : "1024x1024"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "Nature_River_1024.png",
-      "idiom" : "universal",
-      "platform" : "ios",
-      "size" : "1024x1024"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "tinted"
-        }
-      ],
-      "filename" : "Nature_River_1024 2.png",
+      "filename" : "Flip_Cam.jpg",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
