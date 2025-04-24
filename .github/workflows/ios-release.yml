@@ -1,0 +1,52 @@
+name: iOS Release
+
+on:
+  push:
+    branches:
+      - feat/gitHubAction2
+
+jobs:
+  build-and-deploy:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Select Xcode 16
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.2.0'
+
+    - name: Build and Test
+      run: |
+        xcodebuild clean build test \
+          -project FlipCam/FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.2' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
+          
+    - name: Build and Archive
+      run: |
+        xcodebuild clean archive \
+          -project FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -configuration Release \
+          -archivePath ./build/FlipCam.xcarchive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
+          
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive \
+          -archivePath ./build/FlipCam.xcarchive \
+          -exportOptionsPlist ./exportOptions.plist \
+          -exportPath ./build
+          
+    - name: Upload to App Store Connect
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: "./build/FlipCam.ipa"
+        issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }} 
