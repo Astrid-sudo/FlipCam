@@ -1,0 +1,37 @@
+name: iOS Build and Upload
+
+on:
+  push:
+    branches:
+      - feat/gitHubAction
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode.app
+
+        
+    - name: Run Tests
+      run: |
+        xcodebuild test -workspace FlipCam.xcworkspace -scheme FlipCam -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2'
+        
+    - name: Build and Archive
+      run: |
+        xcodebuild archive -workspace FlipCam.xcworkspace -scheme FlipCam -configuration Release -archivePath $PWD/build/FlipCam.xcarchive
+        
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive -archivePath $PWD/build/FlipCam.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build
+        
+    - name: Upload to App Store Connect
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: $PWD/build/FlipCam.ipa
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }} 
