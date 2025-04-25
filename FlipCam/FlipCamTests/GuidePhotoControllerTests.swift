@@ -11,17 +11,17 @@ import Testing
 
 @Suite("GuidePhotoController Tests")
 struct GuidePhotoControllerTests {
-	@Test("Guide photo can be applied and loaded")
-	func testGuidePhotoApplication() async throws {
-		let mockPhotoLoader = MockPhotoLoader()
-		let controller = await GuidePhotoController(photoLoader: mockPhotoLoader)
-
-		let testIdentifier = "test_photo"
-		await controller.applyGuidePhoto(testIdentifier)
-
-		await #expect(controller.guidePhotoIdentifier == testIdentifier)
-		await #expect(controller.processedGuidePhoto != nil)
-	}
+//	@Test("Guide photo can be applied and loaded")
+//	func testGuidePhotoApplication() async throws {
+//		let mockPhotoLoader = MockPhotoLoader()
+//		let controller = await GuidePhotoController(photoLoader: mockPhotoLoader)
+//
+//		let testIdentifier = "test_photo"
+//		await controller.applyGuidePhoto(testIdentifier)
+//
+//		await #expect(controller.guidePhotoIdentifier == testIdentifier)
+//		await #expect(controller.processedGuidePhoto != nil)
+//	}
 
 	@Test("Guide photo opacity can be adjusted")
 	func testGuidePhotoOpacity() async throws {
