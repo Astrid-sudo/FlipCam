@@ -5,9 +5,16 @@
 	<key>method</key>
 	<string>app-store-connect</string>
 	<key>teamID</key>
-	<string>${{ secrets.TEAM_ID }}</string>
+	<string>${{ secrets.DEVELOPMENT_TEAM }}</string>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.astrid.FlipCam</key>
+		<string>${{ secrets.PROVISIONING_PROFILE_NAME }}</string>
+	</dict>
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>uploadBitcode</key>
