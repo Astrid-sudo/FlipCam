@@ -47,6 +47,10 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+        # Get the certificate identity
+        CERT_IDENTITY=$(security find-identity -v -p codesigning $KEYCHAIN_PATH | head -n 1 | awk '{print $2}')
+        echo "CERT_IDENTITY=$CERT_IDENTITY" >> $GITHUB_ENV
+
     - name: Build and Test
       run: |
         xcodebuild clean build test \
@@ -63,15 +67,18 @@ jobs:
           -scheme FlipCam \
           -configuration Release \
           -archivePath ./build/FlipCam.xcarchive \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO
+          CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
+          CODE_SIGNING_REQUIRED=YES \
+          PROVISIONING_PROFILE_SPECIFIER="$BUILD_PROVISION_PROFILE_BASE64" \
+          DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           
     - name: Export IPA
       run: |
         xcodebuild -exportArchive \
           -archivePath ./build/FlipCam.xcarchive \
           -exportOptionsPlist ./exportOptions.plist \
-          -exportPath ./build
+          -exportPath ./build \
+          -allowProvisioningUpdates
           
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
