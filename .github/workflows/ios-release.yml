@@ -60,23 +60,27 @@ jobs:
           echo "Warning: MARKETING_VERSION is not set in project settings"
         fi
         
-        # Append workflow run number to build number
-        NEW_VERSION="${CURRENT_VERSION}.${GITHUB_RUN_NUMBER}"
+        # Append GitHub Action number to build number
+        NEW_BUILD="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
         
-        echo "Setting new version to: ${NEW_VERSION}"
+        echo "Setting new version to: ${CURRENT_VERSION} (${NEW_BUILD})"
         
-        # Update both version and build number to be the same
+        # Update both version and build number
         xcodebuild -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
           -configuration Release \
-          MARKETING_VERSION=$NEW_VERSION \
-          CURRENT_PROJECT_VERSION=$NEW_VERSION
+          MARKETING_VERSION=$CURRENT_VERSION \
+          CURRENT_PROJECT_VERSION=$NEW_BUILD
         
         # Verify the update
         echo "Verifying updated settings:"
         xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
         
-        echo "Updated version: ${CURRENT_VERSION} -> ${NEW_VERSION}"
+        echo "Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
+                  
+        # Check cfBundleVersion in the new IPA
+        echo "Checking cfBundleVersion in new IPA:"
+        unzip -p ./build/FlipCam.ipa Payload/FlipCam.app/Info.plist | plutil -p -
 
 #    - name: Build and Test
 #      run: |
@@ -109,10 +113,6 @@ jobs:
           -exportOptionsPlist ./exportOptions.plist \
           -exportPath ./build \
           -allowProvisioningUpdates
-          
-        # Check cfBundleVersion in the IPA
-        echo "Checking cfBundleVersion in IPA:"
-        unzip -p ./build/FlipCam.ipa Payload/FlipCam.app/Info.plist | plutil -p -
           
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
