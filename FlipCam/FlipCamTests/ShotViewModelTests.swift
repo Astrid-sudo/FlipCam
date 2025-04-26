@@ -31,18 +31,18 @@ struct ShotViewModelTests {
 		await #expect(viewModel.output.processedGuidePhoto != nil)
 	}
 
-//	@Test("Guide photo effect can be set through view model")
-//	func testGuidePhotoEffect() async throws {
-//		let mockPhotoLoader = MockPhotoLoader()
-//		let viewModel = await ShotViewModel(cameraController: CameraController(),
-//											guidePhotoController: GuidePhotoController(photoLoader: mockPhotoLoader))
-//
-//		let testEffect = GuidePhotoEffect.outline
-//		await viewModel.input.setGuidePhotoEffect(testEffect)
-//
-//		await #expect(viewModel.output.currentGuidePhotoEffect == testEffect)
-//		await #expect(viewModel.output.processedGuidePhoto != nil)
-//	}
+	@Test("Guide photo effect can be set through view model")
+	func testGuidePhotoEffect() async throws {
+		let mockPhotoLoader = MockPhotoLoader()
+		let viewModel = await ShotViewModel(cameraController: CameraController(),
+											guidePhotoController: GuidePhotoController(photoLoader: mockPhotoLoader))
+
+		let testEffect = GuidePhotoEffect.outline
+		await viewModel.input.setGuidePhotoEffect(testEffect)
+
+		await #expect(viewModel.output.currentGuidePhotoEffect == testEffect)
+		await #expect(viewModel.output.processedGuidePhoto != nil)
+	}
 
 	@Test("Capture photo method can be called through view model")
 	func testCapturePhoto() async throws {
