@@ -13,7 +13,7 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.astridlin.FlipCam</key>
-		<string>FlipCam Distribution</string>
+		<string>96c0e495-02f8-4ef7-9bbb-b8204ed48b75</string>
 	</dict>
 	<key>stripSwiftSymbols</key>
 	<true/>

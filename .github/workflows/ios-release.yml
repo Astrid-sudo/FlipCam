@@ -43,17 +43,13 @@ jobs:
         security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-        # apply provisioning profile
+        # apply provisioning profile with specific name
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-        # Verify provisioning profile installation
         PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
-        PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" /dev/stdin <<< $(security cms -D -i $PP_PATH))
-        echo "Installed Profile UUID: $PROFILE_UUID"
-        echo "Installed Profile Name: $PROFILE_NAME"
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
         
-        # List all installed profiles
+        # Verify provisioning profile installation
+        echo "Installed Profile UUID: $PROFILE_UUID"
         ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
 
         # Get the certificate identity
@@ -86,6 +82,9 @@ jobs:
       run: |
         # Verify provisioning profile is still available
         ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+        
+        # Print the contents of exportOptions.plist for verification
+        cat ./exportOptions.plist
         
         xcodebuild -exportArchive \
           -archivePath ./build/FlipCam.xcarchive \
