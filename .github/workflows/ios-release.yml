@@ -33,12 +33,12 @@ jobs:
         fi
         
         # Append workflow run number to build number
-        NEW_BUILD="${CURRENT_BUILD}.${GITHUB_RUN_NUMBER}"
+        NEW_VERSION="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
         
         # Update build number
-        xcodebuild -project FlipCam/FlipCam.xcodeproj -target FlipCam -configuration Release CURRENT_PROJECT_VERSION=$NEW_BUILD
+        xcodebuild -project FlipCam/FlipCam.xcodeproj -target FlipCam -configuration Release CURRENT_PROJECT_VERSION=$NEW_VERSION
         
-        echo "Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
+        echo "Updated version: ${CURRENT_VERSION} (${NEW_VERSION})"
 
     - name: Install the Apple certificate and provisioning profile
       env:
