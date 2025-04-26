@@ -98,6 +98,22 @@ jobs:
           CODE_SIGNING_REQUIRED=YES \
           DEVELOPMENT_TEAM="XN354JRCK2"
           
+        # Modify Info.plist in the archive
+        echo "Modifying Info.plist in archive..."
+        ARCHIVE_INFO_PLIST="./build/FlipCam.xcarchive/Products/Applications/FlipCam.app/Info.plist"
+        if [ -f "$ARCHIVE_INFO_PLIST" ]; then
+          # Update CFBundleVersion
+          plutil -replace CFBundleVersion -string "$NEW_BUILD" "$ARCHIVE_INFO_PLIST"
+          # Update CFBundleShortVersionString
+          plutil -replace CFBundleShortVersionString -string "$CURRENT_VERSION" "$ARCHIVE_INFO_PLIST"
+          
+          echo "Updated Info.plist contents:"
+          plutil -p "$ARCHIVE_INFO_PLIST" | grep -E "CFBundleVersion|CFBundleShortVersionString"
+        else
+          echo "Error: Info.plist not found in archive"
+          exit 1
+        fi
+          
     - name: Export IPA
       run: |
         xcodebuild -exportArchive \
