@@ -110,6 +110,10 @@ jobs:
           -exportPath ./build \
           -allowProvisioningUpdates
           
+        # Check cfBundleVersion in the IPA
+        echo "Checking cfBundleVersion in IPA:"
+        unzip -p ./build/FlipCam.ipa Payload/FlipCam.app/Info.plist | plutil -p -
+          
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
       with:
