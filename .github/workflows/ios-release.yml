@@ -62,6 +62,10 @@ jobs:
           
     - name: Build and Archive
       run: |
+        # Get the provisioning profile UUID
+        PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision))
+        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -69,7 +73,7 @@ jobs:
           -archivePath ./build/FlipCam.xcarchive \
           CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
           CODE_SIGNING_REQUIRED=YES \
-          PROVISIONING_PROFILE_SPECIFIER="$BUILD_PROVISION_PROFILE_BASE64" \
+          PROVISIONING_PROFILE="$PROFILE_UUID" \
           DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           
     - name: Export IPA
