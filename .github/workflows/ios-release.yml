@@ -77,10 +77,6 @@ jobs:
         xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
         
         echo "Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
-                  
-        # Check cfBundleVersion in the new IPA
-        echo "Checking cfBundleVersion in new IPA:"
-        unzip -p ./build/FlipCam.ipa Payload/FlipCam.app/Info.plist | plutil -p -
 
 #    - name: Build and Test
 #      run: |
@@ -93,10 +89,6 @@ jobs:
           
     - name: Build and Archive
       run: |
-        # Verify settings before build
-        echo "Settings before build:"
-        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
-        
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -114,6 +106,15 @@ jobs:
           -exportPath ./build \
           -allowProvisioningUpdates
           
+        # Check cfBundleVersion in the IPA
+        if [ -f "./build/FlipCam.ipa" ]; then
+          echo "Checking cfBundleVersion in IPA:"
+          unzip -p ./build/FlipCam.ipa Payload/FlipCam.app/Info.plist | plutil -p -
+        else
+          echo "Error: IPA file not found at ./build/FlipCam.ipa"
+          exit 1
+        fi
+
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
       with:
