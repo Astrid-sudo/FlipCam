@@ -51,8 +51,11 @@ jobs:
       run: |
         echo "🔍 Checking current project version info..."
         
+        # Change to project directory
+        cd FlipCam
+        
         # Fetch current marketing version
-        CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj \
+        CURRENT_VERSION=$(xcodebuild -project FlipCam.xcodeproj \
           -scheme FlipCam \
           -configuration Release \
           -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
@@ -74,12 +77,15 @@ jobs:
     
         # Verify update
         echo "✅ Verifying updated version info..."
-        xcodebuild -project FlipCam/FlipCam.xcodeproj \
+        xcodebuild -project FlipCam.xcodeproj \
           -scheme FlipCam \
           -configuration Release \
           -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
 
         echo "📦 Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
+        
+        # Change back to root directory
+        cd ..
 
 #    - name: Build and Test
 #      run: |
