@@ -43,20 +43,13 @@ jobs:
         security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-        # apply provisioning profile with specific name
+        # apply provisioning profile
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
-        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
-        
-        # Verify provisioning profile installation
-        echo "Installed Profile UUID: $PROFILE_UUID"
-        ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
         # Get the certificate identity
         CERT_IDENTITY=$(security find-identity -v -p codesigning $KEYCHAIN_PATH | head -n 1 | awk '{print $2}')
         echo "CERT_IDENTITY=$CERT_IDENTITY" >> $GITHUB_ENV
-        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
-
 #    - name: Build and Test
 #      run: |
 #        xcodebuild clean build test \
@@ -68,10 +61,6 @@ jobs:
           
     - name: Build and Archive
       run: |
-        # Set bundle identifier
-        BUNDLE_ID="com.astrid.FlipCam"
-        echo "Using Bundle Identifier: $BUNDLE_ID"
-        
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -79,23 +68,10 @@ jobs:
           -archivePath ./build/FlipCam.xcarchive \
           CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
           CODE_SIGNING_REQUIRED=YES \
-          PROVISIONING_PROFILE="$PROFILE_UUID" \
-          DEVELOPMENT_TEAM="XN354JRCK2" \
-          PROVISIONING_PROFILE_SPECIFIER="FlipCam Distribution" \
-          PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID"
+          DEVELOPMENT_TEAM="XN354JRCK2"
           
     - name: Export IPA
       run: |
-        # Verify provisioning profile is still available
-        ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
-        
-        # Print the contents of exportOptions.plist for verification
-        cat ./exportOptions.plist
-        
-        # List the contents of the archive
-        ls -la ./build/FlipCam.xcarchive/Products/Applications/
-        
-        # Export the IPA
         xcodebuild -exportArchive \
           -archivePath ./build/FlipCam.xcarchive \
           -exportOptionsPlist ./exportOptions.plist \
