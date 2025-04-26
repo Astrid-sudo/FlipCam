@@ -86,9 +86,10 @@ jobs:
         # Print the contents of exportOptions.plist for verification
         cat ./exportOptions.plist
         
-        # Verify the archive contents
-        xcodebuild -showBuildSettings -archivePath ./build/FlipCam.xcarchive
+        # List the contents of the archive
+        ls -la ./build/FlipCam.xcarchive/Products/Applications/
         
+        # Export the IPA
         xcodebuild -exportArchive \
           -archivePath ./build/FlipCam.xcarchive \
           -exportOptionsPlist ./exportOptions.plist \
