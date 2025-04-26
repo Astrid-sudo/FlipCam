@@ -47,9 +47,19 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+        # Verify provisioning profile installation
+        PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
+        PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" /dev/stdin <<< $(security cms -D -i $PP_PATH))
+        echo "Installed Profile UUID: $PROFILE_UUID"
+        echo "Installed Profile Name: $PROFILE_NAME"
+        
+        # List all installed profiles
+        ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+
         # Get the certificate identity
         CERT_IDENTITY=$(security find-identity -v -p codesigning $KEYCHAIN_PATH | head -n 1 | awk '{print $2}')
         echo "CERT_IDENTITY=$CERT_IDENTITY" >> $GITHUB_ENV
+        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
 
 #    - name: Build and Test
 #      run: |
@@ -62,10 +72,6 @@ jobs:
           
     - name: Build and Archive
       run: |
-        # Get the provisioning profile UUID
-        PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision))
-        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
-
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -74,10 +80,13 @@ jobs:
           CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
           CODE_SIGNING_REQUIRED=YES \
           PROVISIONING_PROFILE="$PROFILE_UUID" \
-          DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
+          DEVELOPMENT_TEAM="XN354JRCK2"
           
     - name: Export IPA
       run: |
+        # Verify provisioning profile is still available
+        ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+        
         xcodebuild -exportArchive \
           -archivePath ./build/FlipCam.xcarchive \
           -exportOptionsPlist ./exportOptions.plist \
