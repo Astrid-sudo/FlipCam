@@ -12,7 +12,7 @@
 	<string>Apple Distribution</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.astridlin.FlipCam</key>
+		<key>com.astrid.FlipCam</key>
 		<string>96c0e495-02f8-4ef7-9bbb-b8204ed48b75</string>
 	</dict>
 	<key>stripSwiftSymbols</key>

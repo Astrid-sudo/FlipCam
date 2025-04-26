@@ -69,7 +69,7 @@ jobs:
     - name: Build and Archive
       run: |
         # Set bundle identifier
-        BUNDLE_ID="com.astridlin.FlipCam"
+        BUNDLE_ID="com.astrid.FlipCam"
         echo "Using Bundle Identifier: $BUNDLE_ID"
         
         xcodebuild clean archive \
