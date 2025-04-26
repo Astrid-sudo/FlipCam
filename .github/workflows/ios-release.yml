@@ -17,29 +17,6 @@ jobs:
       with:
         xcode-version: '16.2.0'
 
-    - name: Update App Version
-      run: |
-        # Get current version and build number from project settings
-        CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
-        CURRENT_BUILD=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -showBuildSettings | grep CURRENT_PROJECT_VERSION | cut -d'=' -f2 | xargs)
-        
-        # Log if version or build number is not set
-        if [ -z "$CURRENT_VERSION" ]; then
-          echo "Warning: MARKETING_VERSION is not set in project settings"
-        fi
-        
-        if [ -z "$CURRENT_BUILD" ]; then
-          echo "Warning: CURRENT_PROJECT_VERSION is not set in project settings"
-        fi
-        
-        # Append workflow run number to build number
-        NEW_VERSION="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
-        
-        # Update build number
-        xcodebuild -project FlipCam/FlipCam.xcodeproj -target FlipCam -configuration Release CURRENT_PROJECT_VERSION=$NEW_VERSION
-        
-        echo "Updated version: ${CURRENT_VERSION} (${NEW_VERSION})"
-
     - name: Install the Apple certificate and provisioning profile
       env:
         BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
@@ -69,6 +46,29 @@ jobs:
         # apply provisioning profile
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+    - name: Update App Version
+      run: |
+        # Get current version and build number from project settings
+        CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
+        CURRENT_BUILD=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep CURRENT_PROJECT_VERSION | cut -d'=' -f2 | xargs)
+        
+        # Log if version or build number is not set
+        if [ -z "$CURRENT_VERSION" ]; then
+          echo "Warning: MARKETING_VERSION is not set in project settings"
+        fi
+        
+        if [ -z "$CURRENT_BUILD" ]; then
+          echo "Warning: CURRENT_PROJECT_VERSION is not set in project settings"
+        fi
+        
+        # Append workflow run number to build number
+        NEW_VERSION="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
+        
+        # Update build number
+        xcodebuild -project FlipCam/FlipCam.xcodeproj -target FlipCam -configuration Release CURRENT_PROJECT_VERSION=$NEW_VERSION
+        
+        echo "Updated version: ${CURRENT_VERSION} (${NEW_VERSION})"
 
 #    - name: Build and Test
 #      run: |
