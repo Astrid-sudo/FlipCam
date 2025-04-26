@@ -47,6 +47,10 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+    - name: Install XCBeautify
+      run: |
+        brew install xcbeautify
+
     - name: Update App Version
       run: |
         # Change to project directory
@@ -92,8 +96,9 @@ jobs:
           -scheme FlipCam \
           -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.2' \
           CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO
-          
+          CODE_SIGNING_REQUIRED=NO \
+          | xcbeautify
+
     - name: Build and Archive
       run: |
         xcodebuild clean archive \
@@ -103,7 +108,8 @@ jobs:
           -archivePath ./build/FlipCam.xcarchive \
           CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
           CODE_SIGNING_REQUIRED=YES \
-          DEVELOPMENT_TEAM="XN354JRCK2"
+          DEVELOPMENT_TEAM="XN354JRCK2" \
+          | xcbeautify
 
     - name: Export IPA
       run: |
@@ -111,7 +117,8 @@ jobs:
           -archivePath ./build/FlipCam.xcarchive \
           -exportOptionsPlist ./exportOptions.plist \
           -exportPath ./build \
-          -allowProvisioningUpdates
+          -allowProvisioningUpdates \
+          | xcbeautify
 
     - name: Upload to App Store Connect
       uses: apple-actions/upload-testflight-build@v1
