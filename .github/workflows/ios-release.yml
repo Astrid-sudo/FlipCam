@@ -50,6 +50,9 @@ jobs:
     - name: Update App Version
       run: |
         # Get current version and build number from project settings
+        echo "Current project settings:"
+        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+        
         CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
         
         # Log if version or build number is not set
@@ -58,7 +61,10 @@ jobs:
         fi
         
         # Append workflow run number to build number
-        NEW_VERSION="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
+        NEW_VERSION="${CURRENT_VERSION}.${GITHUB_RUN_NUMBER}"
+        
+        echo "Setting new version to: ${NEW_VERSION}"
+        
         # Update both version and build number to be the same
         xcodebuild -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -66,7 +72,11 @@ jobs:
           MARKETING_VERSION=$NEW_VERSION \
           CURRENT_PROJECT_VERSION=$NEW_VERSION
         
-        echo "Updated version: ${CURRENT_VERSION} (${NEW_VERSION})"
+        # Verify the update
+        echo "Verifying updated settings:"
+        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+        
+        echo "Updated version: ${CURRENT_VERSION} -> ${NEW_VERSION}"
 
 #    - name: Build and Test
 #      run: |
@@ -79,6 +89,10 @@ jobs:
           
     - name: Build and Archive
       run: |
+        # Verify settings before build
+        echo "Settings before build:"
+        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+        
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
