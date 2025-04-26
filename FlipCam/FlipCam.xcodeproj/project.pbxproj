@@ -470,7 +470,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.astrid.FlipCam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "iOS Team Store Provisioning Profile: com.astrid.FlipCam";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "FlipCam Distribution";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
