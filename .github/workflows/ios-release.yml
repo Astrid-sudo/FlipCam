@@ -85,14 +85,14 @@ jobs:
         # Change back to root directory
         cd ..
 
-#    - name: Build and Test
-#      run: |
-#        xcodebuild clean build test \
-#          -project FlipCam/FlipCam.xcodeproj \
-#          -scheme FlipCam \
-#          -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.2' \
-#          CODE_SIGN_IDENTITY="" \
-#          CODE_SIGNING_REQUIRED=NO
+    - name: Build and Test
+      run: |
+        xcodebuild clean build test \
+          -project FlipCam/FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.2' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO
           
     - name: Build and Archive
       run: |
