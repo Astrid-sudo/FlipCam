@@ -49,34 +49,37 @@ jobs:
 
     - name: Update App Version
       run: |
-        # Get current version and build number from project settings
-        echo "Current project settings:"
-        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+        echo "🔍 Checking current project version info..."
         
-        CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
-        
-        # Log if version or build number is not set
+        # Fetch current marketing version
+        CURRENT_VERSION=$(xcodebuild -project FlipCam/FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -configuration Release \
+          -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
+    
+        # If version is not set, warn and exit
         if [ -z "$CURRENT_VERSION" ]; then
-          echo "Warning: MARKETING_VERSION is not set in project settings"
+          echo "⚠️ Warning: MARKETING_VERSION is not set in project settings."
+          exit 1
         fi
-        
-        # Append GitHub Action number to build number
+    
+        # Create new build number by appending GitHub Actions run number
         NEW_BUILD="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
-        
-        echo "Setting new version to: ${CURRENT_VERSION} (${NEW_BUILD})"
-        
-        # Update both version and build number
+    
+        echo "🔧 Setting MARKETING_VERSION=${CURRENT_VERSION} and CURRENT_PROJECT_VERSION=${NEW_BUILD}"
+    
+        # Set new version and build number
+        xcrun agvtool new-marketing-version "${CURRENT_VERSION}"
+        xcrun agvtool new-version -all "${NEW_BUILD}"
+    
+        # Verify update
+        echo "✅ Verifying updated version info..."
         xcodebuild -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
           -configuration Release \
-          MARKETING_VERSION=$CURRENT_VERSION \
-          CURRENT_PROJECT_VERSION=$NEW_BUILD
-        
-        # Verify the update
-        echo "Verifying updated settings:"
-        xcodebuild -project FlipCam/FlipCam.xcodeproj -scheme FlipCam -configuration Release -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
-        
-        echo "Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
+          -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+
+        echo "📦 Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
 
 #    - name: Build and Test
 #      run: |
