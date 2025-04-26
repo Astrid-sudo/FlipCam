@@ -40,8 +40,7 @@ struct ShotViewModelTests {
 		let testEffect = GuidePhotoEffect.outline
 		await viewModel.input.setGuidePhotoEffect(testEffect)
 
-		await #expect(viewModel.output.currentGuidePhotoEffect == testEffect)
-		await #expect(viewModel.output.processedGuidePhoto != nil)
+		#expect(Bool(false))
 	}
 
 	@Test("Capture photo method can be called through view model")
