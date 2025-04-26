@@ -47,9 +47,6 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-        # Get the certificate identity
-        CERT_IDENTITY=$(security find-identity -v -p codesigning $KEYCHAIN_PATH | head -n 1 | awk '{print $2}')
-        echo "CERT_IDENTITY=$CERT_IDENTITY" >> $GITHUB_ENV
 #    - name: Build and Test
 #      run: |
 #        xcodebuild clean build test \
