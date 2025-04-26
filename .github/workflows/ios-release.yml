@@ -68,6 +68,10 @@ jobs:
           
     - name: Build and Archive
       run: |
+        # Verify bundle identifier
+        BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" FlipCam/Info.plist)
+        echo "Bundle Identifier: $BUNDLE_ID"
+        
         xcodebuild clean archive \
           -project FlipCam/FlipCam.xcodeproj \
           -scheme FlipCam \
@@ -76,7 +80,8 @@ jobs:
           CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
           CODE_SIGNING_REQUIRED=YES \
           PROVISIONING_PROFILE="$PROFILE_UUID" \
-          DEVELOPMENT_TEAM="XN354JRCK2"
+          DEVELOPMENT_TEAM="XN354JRCK2" \
+          PROVISIONING_PROFILE_SPECIFIER="FlipCam Distribution"
           
     - name: Export IPA
       run: |
@@ -88,6 +93,9 @@ jobs:
         
         # List the contents of the archive
         ls -la ./build/FlipCam.xcarchive/Products/Applications/
+        
+        # Verify the app's Info.plist
+        /usr/libexec/PlistBuddy -c "Print" ./build/FlipCam.xcarchive/Products/Applications/FlipCam.app/Info.plist
         
         # Export the IPA
         xcodebuild -exportArchive \
