@@ -3,7 +3,7 @@ name: iOS Release
 on:
   push:
     branches:
-      - feat/gitHubAction2
+      - main
 
 jobs:
   build-and-deploy:
