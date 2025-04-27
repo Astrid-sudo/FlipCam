@@ -39,6 +39,9 @@ struct GuidePhotoControllerTests {
 		let mockPhotoLoader = MockPhotoLoader()
 		let controller = await GuidePhotoController(photoLoader: mockPhotoLoader)
 
+		let testIdentifier = "test_photo"
+		await controller.applyGuidePhoto(testIdentifier)
+
 		let testEffect = GuidePhotoEffect.outline
 		await controller.setGuidePhotoEffect(testEffect)
 

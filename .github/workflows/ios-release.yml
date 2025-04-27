@@ -1,0 +1,141 @@
+name: iOS Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Select Xcode 16
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.2.0'
+
+    - name: Install the Apple certificate and provisioning profile
+      env:
+        BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # import certificate and provisioning profile from secrets
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+        # create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+        # import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+        # apply provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+    - name: Update App Version
+      run: |
+        # Change to project directory
+        cd FlipCam
+        
+        # Fetch current marketing version
+        CURRENT_VERSION=$(xcodebuild -project FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -configuration Release \
+          -showBuildSettings | grep MARKETING_VERSION | cut -d'=' -f2 | xargs)
+    
+        # If version is not set, warn and exit
+        if [ -z "$CURRENT_VERSION" ]; then
+          echo "⚠️ Warning: MARKETING_VERSION(CFBundleShortVersionString) is not set in project settings."
+          exit 1
+        fi
+    
+        # Create new build number by appending GitHub Actions run number
+        NEW_BUILD="${CURRENT_VERSION}${GITHUB_RUN_NUMBER}"
+    
+        echo "🔧 Setting MARKETING_VERSION(CFBundleShortVersionString)=${CURRENT_VERSION} and CURRENT_PROJECT_VERSION(CFBundleVersionString)=${NEW_BUILD}"
+    
+        # Set new version and build number
+        xcrun agvtool new-marketing-version "${CURRENT_VERSION}"
+        xcrun agvtool new-version -all "${NEW_BUILD}"
+    
+        # Verify update
+        echo "✅ Verifying updated version info..."
+        xcodebuild -project FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -configuration Release \
+          -showBuildSettings | grep -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION"
+
+        echo "📦 Updated version: ${CURRENT_VERSION} (${NEW_BUILD})"
+        
+        # Change back to root directory
+        cd ..
+
+    - name: Build and Test
+      run: |
+        set -o pipefail
+        xcodebuild clean build test \
+          -project FlipCam/FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max,OS=18.2' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          -resultBundlePath ./build/TestResults.xcresult \
+          | xcbeautify
+        
+    - name: Zip Test Results
+      if: failure() || success()
+      run: |
+        cd ./build
+        zip -rq TestResults.xcresult.zip TestResults.xcresult
+
+    - name: Upload Test Results
+      if: failure() || success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: ./build/TestResults.xcresult.zip
+        retention-days: 7
+        
+    - name: Build and Archive
+      run: |
+        xcodebuild clean archive \
+          -project FlipCam/FlipCam.xcodeproj \
+          -scheme FlipCam \
+          -configuration Release \
+          -archivePath ./build/FlipCam.xcarchive \
+          CODE_SIGN_IDENTITY="$CERT_IDENTITY" \
+          CODE_SIGNING_REQUIRED=YES \
+          DEVELOPMENT_TEAM="XN354JRCK2" \
+          | xcbeautify
+
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive \
+          -archivePath ./build/FlipCam.xcarchive \
+          -exportOptionsPlist ./exportOptions.plist \
+          -exportPath ./build \
+          -allowProvisioningUpdates \
+          | xcbeautify
+
+    - name: Upload to App Store Connect
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: "./build/FlipCam.ipa"
+        issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+        api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }} 
